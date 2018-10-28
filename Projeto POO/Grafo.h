@@ -1,9 +1,13 @@
 #pragma once
+#include "pch.h"
+#include "Fronteira.h"
+
+
 class Grafo {
 private:
 	unsigned int n_vertices;
 	unsigned int n_arestas;
-
+	// map<Fronteira, list<Filhos>> myGrafo;
 public:
 	// Implemente o construtor do Grafo;
 	Grafo();

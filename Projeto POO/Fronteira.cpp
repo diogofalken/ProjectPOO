@@ -6,6 +6,9 @@ Fronteira::Fronteira() {
 
 }
 
+void Fronteira::Mostrar() {
+	cout << "Vértice: " << vertice << endl;
+}
 
 Fronteira::~Fronteira() {
 

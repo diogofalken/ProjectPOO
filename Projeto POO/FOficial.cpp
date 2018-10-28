@@ -6,7 +6,6 @@ FOficial::FOficial() {
 
 }
 
-
 FOficial::~FOficial() {
 
 }
