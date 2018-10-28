@@ -21,6 +21,9 @@
     <ClInclude Include="Grafo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Fronteiras.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -30,6 +33,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Grafo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Fronteiras.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

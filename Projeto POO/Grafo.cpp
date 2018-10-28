@@ -1,12 +1,15 @@
 #include "pch.h"
 #include "Grafo.h"
 
-
+//-------------------------------------------------------------------
+//Método: Grafo
+//Parametros:
+// Entrada:
+//
+// Retorno:
+//
+//-------------------------------------------------------------------
 Grafo::Grafo() {
-
-}
-
-Grafo::~Grafo() {
 
 }
 
@@ -247,5 +250,17 @@ void Grafo::FronteirasMenosVisitadas(list<int> &Lv) {
 //
 //-------------------------------------------------------------------
 void Grafo::SitiosInacessiveisAPartirDe(int V1, list<int> &Lv) {
+
+}
+
+//-------------------------------------------------------------------
+//Método: ~Grafo
+//Parametros:
+// Entrada:
+//
+// Retorno:
+//
+//-------------------------------------------------------------------
+Grafo::~Grafo() {
 
 }
