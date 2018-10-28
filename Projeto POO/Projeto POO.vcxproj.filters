@@ -21,7 +21,16 @@
     <ClInclude Include="Grafo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Fronteiras.h">
+    <ClInclude Include="Fronteira.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FOficial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FTipo1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FTipo2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,7 +44,16 @@
     <ClCompile Include="Grafo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Fronteiras.cpp">
+    <ClCompile Include="Fronteira.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FOficial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FTipo1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FTipo2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

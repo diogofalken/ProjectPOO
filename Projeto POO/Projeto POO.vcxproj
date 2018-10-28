@@ -151,12 +151,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Fronteiras.h" />
+    <ClInclude Include="FOficial.h" />
+    <ClInclude Include="Fronteira.h" />
+    <ClInclude Include="FTipo1.h" />
+    <ClInclude Include="FTipo2.h" />
     <ClInclude Include="Grafo.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Fronteiras.cpp" />
+    <ClCompile Include="FOficial.cpp" />
+    <ClCompile Include="Fronteira.cpp" />
+    <ClCompile Include="FTipo1.cpp" />
+    <ClCompile Include="FTipo2.cpp" />
     <ClCompile Include="Grafo.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
