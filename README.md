@@ -1,19 +1,8 @@
-Como ler o ficheiro Grafo.txt
+# Boarders - POO
 
-* Primeiros dois parametros
-** Numero de vertices
-** Numero de arestas
+A program that monitors people's movements across borders.
 
-* Ler os vertices
-** Numero do vertice
-** X-position
-** Y-position
-** Tipo de fronteira (Oficial, Tipo 1, Tipo2)
+# Installation
 
-* Delimitador vertices/arestas
-** //-------------------
-
-* Ler as arestas
-** Numero do vertice 1
-** Numero do vertice 2
-** Valor da aresta
+### Requirements
+* C++ compiler

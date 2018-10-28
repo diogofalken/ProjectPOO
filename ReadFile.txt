@@ -1,0 +1,19 @@
+Como ler o ficheiro Grafo.txt
+
+* Primeiros dois parametros
+** Numero de vertices
+** Numero de arestas
+
+* Ler os vertices
+** Numero do vertice
+** X-position
+** Y-position
+** Tipo de fronteira (Oficial, Tipo 1, Tipo2)
+
+* Delimitador vertices/arestas
+** //-------------------
+
+* Ler as arestas
+** Numero do vertice 1
+** Numero do vertice 2
+** Valor da aresta
