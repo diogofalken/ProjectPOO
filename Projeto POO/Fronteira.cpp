@@ -2,8 +2,8 @@
 #include "Fronteira.h"
 
 
-Fronteira::Fronteira() {
-
+Fronteira::Fronteira(int numero) {
+	vertice = numero;
 }
 
 //-------------------------------------------------------------------
@@ -25,6 +25,10 @@ void Fronteira::Mostrar() {
 //-------------------------------------------------------------------
 int Fronteira::getVertice() {
 	return vertice;
+}
+
+void Fronteira::setVertice(int numero) {
+	vertice = numero;
 }
 
 Fronteira::~Fronteira() {

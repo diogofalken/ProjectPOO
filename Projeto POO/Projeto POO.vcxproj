@@ -157,6 +157,7 @@
     <ClInclude Include="FTipo2.h" />
     <ClInclude Include="Grafo.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Uteis.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FOficial.cpp" />
@@ -171,6 +172,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Projeto POO.cpp" />
+    <ClCompile Include="Uteis.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

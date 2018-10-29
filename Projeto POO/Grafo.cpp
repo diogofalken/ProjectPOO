@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "Grafo.h"
+#include "Uteis.h"
+
+#define DELIMITADOR_FICHEIRO "//-------------------"
 
 //-------------------------------------------------------------------
 //Método: Grafo
@@ -23,6 +26,51 @@ Grafo::Grafo() {
 //    true/false, mediante a leitura correcta!
 //-------------------------------------------------------------------
 bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
+	ifstream file_graph(fich_grafo);
+
+	// Variaveis auxiliares
+	string buffer;
+	string current;
+	char *x = new char[128];
+	unsigned int i, number, fronteira_tipo, index = 0;
+
+	// Verificar se o ficheiro foi aberto corretamente  
+	if (!Uteis::FicheiroAberto(&file_graph)) {
+		cout << "Nao foi possivel abrir o ficheiro " << fich_grafo << endl;
+		exit(1);
+	}
+
+	// Retirar os vertices
+	getline(file_graph, buffer);
+	n_vertices = atoi(buffer.c_str());
+
+	// Retirar as arestas
+	getline(file_graph, buffer);
+	n_arestas = atoi(buffer.c_str());
+
+	Fronteira *current;
+
+	// Retirar a info dos vertices
+	// TODO: ACABAR ESTA FUNCAO
+	while (!file_graph.eof()) {
+		getline(file_graph, buffer);
+		stringstream ss(buffer);
+		i = 0;
+		while (getline(ss, buffer, ';')) {
+			if (buffer != DELIMITADOR_FICHEIRO) {
+				if (i = 0) {
+					ss << number;
+				}
+				if (i = 3) {
+					ss << fronteira_tipo;
+				}
+				i++;
+			}
+			break;
+		}
+	}
+
+	file_graph.close();
 	return NULL;
 }
 

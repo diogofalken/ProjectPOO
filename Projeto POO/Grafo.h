@@ -2,12 +2,17 @@
 #include "pch.h"
 #include "Fronteira.h"
 
+typedef struct vizinhos {
+	Fronteira *vertice;
+	unsigned int custo;
+}Fronteira_vizinha;
 
 class Grafo {
 private:
 	unsigned int n_vertices;
 	unsigned int n_arestas;
-	// map<Fronteira, list<Filhos>> myGrafo;
+	// Usamos um map de modo a guardar o vertice e os caminhos possiveis atraves de uma lista (contem o vertice e o custo desse caminho)
+	map<Fronteira, list<Fronteira_vizinha>> myGrafo;
 public:
 	// Implemente o construtor do Grafo;
 	Grafo();

@@ -17,3 +17,5 @@ Como ler o ficheiro Grafo.txt
 ** Numero do vertice 1
 ** Numero do vertice 2
 ** Valor da aresta
+
+Como ler o ficheiro Pessoas.txt
