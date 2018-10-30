@@ -32,7 +32,7 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	string buffer;
 	string current;
 	char *x = new char[128];
-	unsigned int i, number, fronteira_tipo, index = 0;
+	unsigned int i, number = 0, fronteira_tipo = 0, index = 0;
 
 	// Verificar se o ficheiro foi aberto corretamente  
 	if (!Uteis::FicheiroAberto(&file_graph)) {
@@ -48,7 +48,7 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	getline(file_graph, buffer);
 	n_arestas = atoi(buffer.c_str());
 
-	Fronteira *current;
+//	Fronteira *current;
 
 	// Retirar a info dos vertices
 	// TODO: ACABAR ESTA FUNCAO
