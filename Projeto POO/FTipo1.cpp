@@ -2,7 +2,7 @@
 #include "FTipo1.h"
 
 
-FTipo1::FTipo1() {
+FTipo1::FTipo1(int vertice) : Fronteira(vertice){
 
 }
 

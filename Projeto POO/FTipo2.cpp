@@ -2,7 +2,7 @@
 #include "FTipo2.h"
 
 
-FTipo2::FTipo2() {
+FTipo2::FTipo2(int vertice) : Fronteira(vertice) { 
 	peso_transportado = 0;
 }
 

@@ -2,7 +2,7 @@
 #include "FOficial.h"
 
 
-FOficial::FOficial() {
+FOficial::FOficial(int vertice) : Fronteira(vertice) {
 
 }
 

@@ -3,7 +3,7 @@
 class FOficial : public Fronteira {
 
 public:
-	FOficial();
+	FOficial(int vertice);
 	~FOficial();
 };
 

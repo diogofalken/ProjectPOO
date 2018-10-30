@@ -6,7 +6,7 @@ private:
 	unsigned int preco_pago;
 
 public:
-	FTipo1();
+	FTipo1(int vertice);
 	void Mostrar();
 	~FTipo1();
 };
