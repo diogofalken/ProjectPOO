@@ -26,51 +26,52 @@ Grafo::Grafo() {
 //    true/false, mediante a leitura correcta!
 //-------------------------------------------------------------------
 bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
-	ifstream file_graph(fich_grafo);
-
+	// Abrir o ficheiro
+	ifstream in_file(fich_grafo);
+	
 	// Variaveis auxiliares
 	string buffer;
-	string current;
-	char *x = new char[128];
-	unsigned int i, number = 0, fronteira_tipo = 0, index = 0;
-
+	int x = 0, y = 0, vertice = 0, tipo = 4, parametro = 0;
 	// Verificar se o ficheiro foi aberto corretamente  
-	if (!Uteis::FicheiroAberto(&file_graph)) {
+	if (!Uteis::FicheiroAberto(&in_file)) {
 		cout << "Nao foi possivel abrir o ficheiro " << fich_grafo << endl;
 		exit(1);
 	}
 
 	// Retirar os vertices
-	getline(file_graph, buffer);
+	getline(in_file, buffer);
 	n_vertices = atoi(buffer.c_str());
 
 	// Retirar as arestas
-	getline(file_graph, buffer);
+	getline(in_file, buffer);
 	n_arestas = atoi(buffer.c_str());
 
-//	Fronteira *current;
-
-	// Retirar a info dos vertices
-	// TODO: ACABAR ESTA FUNCAO
-	while (!file_graph.eof()) {
-		getline(file_graph, buffer);
+	while (!in_file.eof()) {
+		getline(in_file, buffer);
 		stringstream ss(buffer);
-		i = 0;
+		parametro = 0;
 		while (getline(ss, buffer, ';')) {
-			if (buffer != DELIMITADOR_FICHEIRO) {
-				if (i = 0) {
-					ss << number;
-				}
-				if (i = 3) {
-					ss << fronteira_tipo;
-				}
-				i++;
+			switch (parametro) {
+			case 0: 
+				ss >> vertice;
+				break;
+			case 1:
+				ss >> x;
+				break;
+			case 2: 
+				ss >> y;
+				break;
+			case 3:
+				ss >> tipo;
+				break;
+			default:
+				break;
 			}
-			break;
+			parametro++;
 		}
+		cout << vertice << " " << x << " " << y << " " << tipo << endl;
 	}
-
-	file_graph.close();
+	cout << "Vertices: " << n_vertices << " Arestas: " << n_arestas << endl;
 	return NULL;
 }
 
