@@ -12,7 +12,7 @@ private:
 	unsigned int n_vertices;
 	unsigned int n_arestas;
 	// Usamos um map de modo a guardar o vertice e os caminhos possiveis atraves de uma lista (contem o vertice e o custo desse caminho)
-	map<Fronteira, list<Fronteira_vizinha>> myGrafo;
+	map<int, list<Fronteira_vizinha>> myGrafo;
 public:
 	// Implemente o construtor do Grafo;
 	Grafo();
