@@ -28,7 +28,7 @@ Grafo::Grafo() {
 bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	// Abrir o ficheiro
 	ifstream in_file(fich_grafo);
-	
+
 	// Variaveis auxiliares
 	string buffer;
 	int x = 0, y = 0, vertice = 0, tipo = 4, parametro = 0;
@@ -51,21 +51,18 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		stringstream ss(buffer);
 		parametro = 0;
 		while (getline(ss, buffer, ';')) {
-			switch (parametro) {
-			case 0: 
-				ss >> vertice;
-				break;
-			case 1:
-				ss >> x;
-				break;
-			case 2: 
-				ss >> y;
-				break;
-			case 3:
-				ss >> tipo;
-				break;
-			default:
-				break;
+			stringstream aux(buffer);
+			if (parametro == 0) {
+				aux >> vertice;
+			}
+			if (parametro == 1) {
+				aux >> x;
+			}
+			if (parametro == 2) {
+				aux >> y;
+			}
+			if (parametro == 3) {
+				aux >> tipo;
 			}
 			parametro++;
 		}
