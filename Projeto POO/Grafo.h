@@ -1,6 +1,9 @@
 #pragma once
 #include "pch.h"
 #include "Fronteira.h"
+#include "FOficial.h"
+#include "FTipo1.h"
+#include "FTipo2.h"
 
 typedef struct vizinhos {
 	Fronteira *vertice;
@@ -13,6 +16,29 @@ private:
 	unsigned int n_arestas;
 	// Usamos um map de modo a guardar o vertice e os caminhos possiveis atraves de uma lista (contem o vertice e o custo desse caminho)
 	map<int, list<Fronteira_vizinha>> myGrafo;
+
+	// Da return de uma variavel do tipo Fronteira_vizinha criada tendo em conta o tipo de fronteira
+	Fronteira_vizinha fronteira_vertice_principal(int vertice, int x_pos, int y_pos, int tipo) {
+		Fronteira_vizinha current;
+		current.custo = 0;
+
+		// E uma fronteira do tipo Oficial
+		if (tipo == 1) {
+			FOficial aux(vertice, x_pos, y_pos);
+			current.vertice = &aux;
+		}
+		// E uma fronteira do tipo 1
+		else if (tipo == 2) {
+			FTipo1 aux(vertice, x_pos, y_pos);
+			current.vertice = &aux;
+		}
+		// E uma fronteira do tipo 2
+		else if (tipo == 3) {
+			FTipo2 aux(vertice, x_pos, y_pos);
+			current.vertice = &aux;
+		}
+		return current;
+	}
 public:
 	// Implemente o construtor do Grafo;
 	Grafo();

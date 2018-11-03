@@ -4,8 +4,10 @@
 class Fronteira {
 private:
 	unsigned int vertice;
+	unsigned int x_pos;
+	unsigned int y_pos;
 public:
-	Fronteira(int numero);
+	Fronteira(int numero, int _x_pos, int _y_pos);
 
 	// Mostrar info das Fronteiras
 	virtual void Mostrar();

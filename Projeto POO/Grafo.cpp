@@ -2,6 +2,7 @@
 #include "Grafo.h"
 #include "Uteis.h"
 
+
 #define DELIMITADOR_FICHEIRO "//-------------------"
 
 //-------------------------------------------------------------------
@@ -31,7 +32,8 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 
 	// Variaveis auxiliares
 	string buffer;
-	int x = 0, y = 0, vertice = 0, tipo = 4, parametro = 0;
+	int x, y, vertice, tipo, parametro = 0, index = 0;
+
 	// Verificar se o ficheiro foi aberto corretamente  
 	if (!Uteis::FicheiroAberto(&in_file)) {
 		cout << "Nao foi possivel abrir o ficheiro " << fich_grafo << endl;
@@ -50,6 +52,10 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		getline(in_file, buffer);
 		stringstream ss(buffer);
 		parametro = 0;
+
+		if (buffer == DELIMITADOR_FICHEIRO) {
+			system("pause");
+		}
 		while (getline(ss, buffer, ';')) {
 			stringstream aux(buffer);
 			if (parametro == 0) {
@@ -66,6 +72,9 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 			}
 			parametro++;
 		}
+		Fronteira_vizinha current = fronteira_vertice_principal(vertice, x, y, tipo);
+		myGrafo[index++].push_back(current);
+		// TODO: FAZER PARTE DAS ARESTAS
 		cout << vertice << " " << x << " " << y << " " << tipo << endl;
 	}
 	cout << "Vertices: " << n_vertices << " Arestas: " << n_arestas << endl;

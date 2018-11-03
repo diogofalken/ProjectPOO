@@ -6,7 +6,7 @@ private:
 	unsigned int peso_transportado;
 public:
 	// Construtor
-	FTipo2(int vertice);
+	FTipo2(int numero, int _x_pos, int _y_pos);
 	
 	// Destrutor
 	~FTipo2();
