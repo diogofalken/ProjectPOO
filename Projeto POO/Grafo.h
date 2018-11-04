@@ -16,11 +16,11 @@ private:
 	unsigned int n_arestas;
 	// Usamos um map de modo a guardar o vertice e os caminhos possiveis atraves de uma lista (contem o vertice e o custo desse caminho)
 	map<int, list<Fronteira_vizinha>> myGrafo;
-
+	list<Fronteira> lista_fronteiras;
 	// Da return de uma variavel do tipo Fronteira_vizinha criada tendo em conta o tipo de fronteira
-	Fronteira_vizinha fronteira_vertice_principal(int vertice, int x_pos, int y_pos, int tipo) {
+	Fronteira_vizinha fronteira_vertice_principal(int vertice, int x_pos, int y_pos, int tipo, int _custo = 0) {
 		Fronteira_vizinha current;
-		current.custo = 0;
+		current.custo = _custo;
 
 		// E uma fronteira do tipo Oficial
 		if (tipo == 1) {
