@@ -15,7 +15,7 @@ Fronteira::Fronteira(int numero, int _x_pos, int _y_pos) {
 // Retorno:
 //-------------------------------------------------------------------
 void Fronteira::Mostrar() {
-	cout << "Vértice: " << vertice << endl;
+	cout << "Vertice: " << vertice << endl;
 }
 
 //-------------------------------------------------------------------

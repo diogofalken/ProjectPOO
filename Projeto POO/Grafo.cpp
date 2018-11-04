@@ -37,7 +37,7 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	// Verificar se o ficheiro foi aberto corretamente  
 	if (!Uteis::FicheiroAberto(&in_file)) {
 		cout << "Nao foi possivel abrir o ficheiro " << fich_grafo << endl;
-		exit(1);
+		return false;
 	}
 
 	// Retirar os vertices
@@ -53,12 +53,13 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		aux_buffer = buffer;
 		stringstream ss(buffer);
 		parametro = 0;
+		
+		// Se a string for igual ao Delimitador de Arestas/Vertices parar
+		if (aux_buffer == DELIMITADOR_FICHEIRO) {
+			break;
+		}
 
 		while (getline(ss, buffer, ';')) {
-			// Se a string for igual ao Delimitador de Arestas/Vertices parar
-			if (aux_buffer == DELIMITADOR_FICHEIRO) {
-				break;
-			}
 			stringstream aux(buffer);
 			if (parametro == 0) {
 				aux >> vertice;
@@ -74,12 +75,13 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 			}
 			parametro++;
 		}
-
-		Fronteira_vizinha current = fronteira_vertice_principal(vertice, x, y, tipo);
-		myGrafo[index++].push_back(current);	
-		//cout << vertice << " " << x << " " << y << " " << tipo << endl;
+		Fronteira current = fronteira_vertice_principal(vertice, x, y, tipo);
+		lista_fronteiras.push_back(current);
 	}
-
+	for (list<Fronteira>::iterator it = lista_fronteiras.begin(); it != lista_fronteiras.end(); it++) {
+		(*it).Mostrar();
+	}
+	/*
 	int vertice_origem, vertice_destino, _custo;
 	while (!in_file.eof()) {
 		getline(in_file, buffer);
@@ -104,7 +106,7 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		aux.custo = _custo;
 		aux.vertice = myGrafo[vertice_destino].cbegin();
 		myGrafo[vertice_origem];
-	}
+	}*/
 
 	cout << "Vertices: " << n_vertices << " Arestas: " << n_arestas << endl;
 	return NULL;
