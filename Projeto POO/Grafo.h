@@ -1,75 +1,26 @@
 #pragma once
 #include "pch.h"
 #include "Fronteira.h"
-#include "FOficial.h"
-#include "FTipo1.h"
-#include "FTipo2.h"
-
-// TODO: Criar Classe
-typedef struct vizinhos {
-	Fronteira *vertice;
-	unsigned int custo;
-}Fronteira_vizinha;
+#include "Arestas.h"
 
 class Grafo {
 private:
 	unsigned int n_vertices;
 	unsigned int n_arestas;
 	// Usamos um map de modo a guardar o vertice e os caminhos possiveis atraves de uma lista (contem o vertice e o custo desse caminho)
-	map<int, list<Fronteira_vizinha*>> myGrafo;
+	map<int, list<Arestas*>> myGrafo;
 	list<Fronteira*> lista_fronteiras;
 
 	// Da return de uma variavel do tipo Fronteira_vizinha criada tendo em conta o tipo de fronteira
-	Fronteira_vizinha fronteira_arestas(int vertice, int x_pos, int y_pos, int tipo, int _custo = 0) {
-		Fronteira_vizinha current;
-		current.custo = _custo;
+	Arestas fronteira_arestas(int vertice, int x_pos, int y_pos, int tipo, int _custo = 0);
 
-		// E uma fronteira do tipo Oficial
-		if (tipo == 1) {
-			FOficial aux(vertice, x_pos, y_pos);
-			current.vertice = &aux;
-		}
-		// E uma fronteira do tipo 1
-		else if (tipo == 2) {
-			FTipo1 aux(vertice, x_pos, y_pos);
-			current.vertice = &aux;
-		}
-		// E uma fronteira do tipo 2
-		else if (tipo == 3) {
-			FTipo2 aux(vertice, x_pos, y_pos);
-			current.vertice = &aux;
-		}
-		return current;
-	}
+	Fronteira* encontrarFronteira(int vertice);
 
-	Fronteira* encontrarFronteira(int vertice) {
-		for (list<Fronteira*>::iterator it = lista_fronteiras.begin(); it != lista_fronteiras.end(); it++) {
-			if ((*it)->getVertice() == vertice) {
-				return *it;
-			}
-		}
-		return NULL;
-	}
+	Fronteira* fronteira_vertice_principal(int vertice, int x_pos, int y_pos, int tipo);
 
-	Fronteira* fronteira_vertice_principal(int vertice, int x_pos, int y_pos, int tipo) {
-		// E uma fronteira do tipo Oficial
-		if (tipo == 1) {
-			FOficial *aux = new FOficial(vertice, x_pos, y_pos);
-			return (FOficial *) aux;
-		}
-		// E uma fronteira do tipo 1
-		else if (tipo == 2) {
-			FTipo1 *aux = new FTipo1(vertice, x_pos, y_pos);
-			return (FTipo1 *)aux;
-		}
-		// E uma fronteira do tipo 2
-		else if (tipo == 3) {
-			FTipo2 *aux = new FTipo2(vertice, x_pos, y_pos);
-			return (FTipo2 *)aux;
-		}
-		cout << "Ficheiro lido incorreto" << endl;
-		exit(1);
-	}
+	void mostrarFronteiras();
+	
+	void mostrarGrafo();
 public:
 	// Implemente o construtor do Grafo;
 	Grafo();

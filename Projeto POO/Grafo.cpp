@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "Grafo.h"
 #include "Uteis.h"
+#include "Arestas.h"
+#include "FOficial.h"
+#include "FTipo1.h"
+#include "FTipo2.h"
 
 
 #define DELIMITADOR_FICHEIRO "//-------------------"
@@ -78,11 +82,10 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		Fronteira *current = fronteira_vertice_principal(vertice, x, y, tipo);
 		lista_fronteiras.push_back(current);
 	}
-	for (list<Fronteira*>::iterator it = lista_fronteiras.begin(); it != lista_fronteiras.end(); it++) {
-		(*it)->Mostrar();
-		cout << "//-----------------" << endl;
-	}
 
+	mostrarFronteiras();
+
+	// Variaveis auxiliares para as arestas
 	int vertice_origem, vertice_destino, _custo;
 	while (!in_file.eof()) {
 		getline(in_file, buffer);
@@ -104,14 +107,11 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 			parametro++;
 		}
 		//cout << vertice_origem << " " << vertice_destino << " " << _custo << endl;
-		Fronteira_vizinha *aux = new Fronteira_vizinha();
-		aux->custo = _custo;
-		aux->vertice = encontrarFronteira(vertice_destino);
-		/*cout << aux->custo << endl;
-		aux->vertice->Mostrar();
-		cout << "-----------------------------" << endl;*/
+		Arestas *aux = new Arestas();
+		aux->setCusto(_custo);
+		aux->setVertice(encontrarFronteira(vertice_destino));
 		// Se o vertice nao existir
-		if (aux->vertice == NULL) {
+		if ( aux->getVertice()->getVertice() == NULL) {
 			cout << "ERROR" << endl;
 			exit(1);
 		}
@@ -119,17 +119,9 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	}
 
 	//ShowGrafo
-	for (int i = 1; i < n_vertices; i++) {
-		cout << i << "--> ";
-		for (list<Fronteira_vizinha*>::iterator it = myGrafo[i].begin(); it != myGrafo[i].end(); it++) {
-			cout << "Custo: " << (*it)->custo << endl;
-			(*it)->vertice->Mostrar();
-		}
-		cout << "-----------------------------" << endl;
-	}
-	
-
-	cout << "Vertices: " << n_vertices << " Arestas: " << n_arestas << endl;
+	mostrarGrafo();
+	cout << "Vertices: " << ContarNos() << " Arestas: " << ContarArcos() << endl;
+	cout << "Memoria ocupada (KB): " << Memoria() << endl;
 	return NULL;
 }
 
@@ -142,7 +134,7 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 //    Numero de nos do grafo
 //-------------------------------------------------------------------
 int Grafo::ContarNos() {
-	return NULL;
+	return n_vertices;
 }
 
 //-------------------------------------------------------------------
@@ -154,7 +146,7 @@ int Grafo::ContarNos() {
 //    Numero de arcos/arestas do grafo
 //-------------------------------------------------------------------
 int Grafo::ContarArcos() {
-	return -1;
+	return n_arestas;
 }
 
 //-------------------------------------------------------------------
@@ -166,7 +158,8 @@ int Grafo::ContarArcos() {
 //    Quanta memoria está a ser ocupada pelo grafo
 //-------------------------------------------------------------------
 int Grafo::Memoria() {
-	return -1;
+	int memoria_ocupada = sizeof(lista_fronteiras) + sizeof(myGrafo);
+	return memoria_ocupada;
 }
 
 //-------------------------------------------------------------------
@@ -370,4 +363,72 @@ void Grafo::SitiosInacessiveisAPartirDe(int V1, list<int> &Lv) {
 //-------------------------------------------------------------------
 Grafo::~Grafo() {
 
+}
+
+/* ------------------------- Private Functions ------------------------- */
+Arestas fronteira_arestas(int vertice, int x_pos, int y_pos, int tipo, int _custo = 0) {
+	Arestas current;
+	current.setCusto(_custo);
+
+	// E uma fronteira do tipo Oficial
+	if (tipo == 1) {
+		FOficial aux(vertice, x_pos, y_pos);
+		current.setVertice(&aux);
+	}
+	// E uma fronteira do tipo 1
+	else if (tipo == 2) {
+		FTipo1 aux(vertice, x_pos, y_pos);
+		current.setVertice(&aux);
+	}
+	// E uma fronteira do tipo 2
+	else if (tipo == 3) {
+		FTipo2 aux(vertice, x_pos, y_pos);
+		current.setVertice(&aux);
+	}
+	return current;
+}
+Fronteira* Grafo::encontrarFronteira(int vertice) {
+	for (list<Fronteira*>::iterator it = lista_fronteiras.begin(); it != lista_fronteiras.end(); it++) {
+		if ((*it)->getVertice() == vertice) {
+			return *it;
+		}
+	}
+	return NULL;
+}
+
+Fronteira* Grafo::fronteira_vertice_principal(int vertice, int x_pos, int y_pos, int tipo) {
+	// E uma fronteira do tipo Oficial
+	if (tipo == 1) {
+		FOficial *aux = new FOficial(vertice, x_pos, y_pos);
+		return (FOficial *)aux;
+	}
+	// E uma fronteira do tipo 1
+	else if (tipo == 2) {
+		FTipo1 *aux = new FTipo1(vertice, x_pos, y_pos);
+		return (FTipo1 *)aux;
+	}
+	// E uma fronteira do tipo 2
+	else if (tipo == 3) {
+		FTipo2 *aux = new FTipo2(vertice, x_pos, y_pos);
+		return (FTipo2 *)aux;
+	}
+	cout << "Ficheiro lido incorreto" << endl;
+	exit(1);
+}
+
+void Grafo::mostrarFronteiras() {
+	for (list<Fronteira*>::iterator it = lista_fronteiras.begin(); it != lista_fronteiras.end(); it++) {
+		(*it)->Mostrar();
+		cout << "//-----------------" << endl;
+	}
+}
+
+void Grafo::mostrarGrafo() {
+	for (int i = 1; i < n_vertices; i++) {
+		cout << "Caminhos para o vertice " << i << endl;
+		for (list<Arestas*>::iterator it = myGrafo[i].begin(); it != myGrafo[i].end(); it++) {
+			(*it)->Mostrar();
+		}
+		cout << "-----------------------------" << endl;
+	}
 }
