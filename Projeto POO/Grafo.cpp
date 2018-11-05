@@ -75,13 +75,14 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 			}
 			parametro++;
 		}
-		Fronteira current = fronteira_vertice_principal(vertice, x, y, tipo);
+		Fronteira *current = fronteira_vertice_principal(vertice, x, y, tipo);
 		lista_fronteiras.push_back(current);
 	}
-	for (list<Fronteira>::iterator it = lista_fronteiras.begin(); it != lista_fronteiras.end(); it++) {
-		(*it).Mostrar();
+	for (list<Fronteira*>::iterator it = lista_fronteiras.begin(); it != lista_fronteiras.end(); it++) {
+		(*it)->Mostrar();
+		cout << "//-----------------" << endl;
 	}
-	/*
+
 	int vertice_origem, vertice_destino, _custo;
 	while (!in_file.eof()) {
 		getline(in_file, buffer);
@@ -102,11 +103,31 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 			}
 			parametro++;
 		}
-		Fronteira_vizinha aux;
-		aux.custo = _custo;
-		aux.vertice = myGrafo[vertice_destino].cbegin();
-		myGrafo[vertice_origem];
-	}*/
+		//cout << vertice_origem << " " << vertice_destino << " " << _custo << endl;
+		Fronteira_vizinha *aux = new Fronteira_vizinha();
+		aux->custo = _custo;
+		aux->vertice = encontrarFronteira(vertice_destino);
+		/*cout << aux->custo << endl;
+		aux->vertice->Mostrar();
+		cout << "-----------------------------" << endl;*/
+		// Se o vertice nao existir
+		if (aux->vertice == NULL) {
+			cout << "ERROR" << endl;
+			exit(1);
+		}
+		myGrafo[vertice_origem].push_back(aux);
+	}
+
+	//ShowGrafo
+	for (int i = 1; i < n_vertices; i++) {
+		cout << i << "--> ";
+		for (list<Fronteira_vizinha*>::iterator it = myGrafo[i].begin(); it != myGrafo[i].end(); it++) {
+			cout << "Custo: " << (*it)->custo << endl;
+			(*it)->vertice->Mostrar();
+		}
+		cout << "-----------------------------" << endl;
+	}
+	
 
 	cout << "Vertices: " << n_vertices << " Arestas: " << n_arestas << endl;
 	return NULL;

@@ -19,7 +19,7 @@ void Fronteira::Mostrar() {
 }
 
 //-------------------------------------------------------------------
-//Método: Adjancencia
+//Método: getVertice
 //Parametros:
 // Entrada:
 // Retorno:
@@ -29,6 +29,24 @@ int Fronteira::getVertice() {
 	return vertice;
 }
 
+//-------------------------------------------------------------------
+//Método: getTipo
+//Parametros:
+// Entrada:
+// Retorno:
+//    Tipo de fronteira (Oficial, T1, T2)
+//-------------------------------------------------------------------
+int Fronteira::getTipo() {
+	return tipo;
+}
+
+//-------------------------------------------------------------------
+//Método: setVertice
+//Parametros:
+// Entrada:
+// Retorno:
+//
+//-------------------------------------------------------------------
 void Fronteira::setVertice(int numero) {
 	vertice = numero;
 }
