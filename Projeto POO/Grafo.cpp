@@ -82,11 +82,19 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		Fronteira *current = fronteira_vertice_principal(vertice, x, y, tipo);
 		lista_fronteiras.push_back(current);
 	}
-
+	
+	// Verificar se os vertices estao corretos no ficheiro
+	// TODO: Depois MUDAR
+	n_vertices = lista_fronteiras.size();
+	if (lista_fronteiras.size() != n_vertices) {
+		system("cls");
+		cout << "Ficheiro nao esta com o formato certo" << endl;
+		exit(1);
+	}
 	mostrarFronteiras();
 
 	// Variaveis auxiliares para as arestas
-	int vertice_origem, vertice_destino, _custo;
+	int vertice_origem, vertice_destino, _custo, aux_arestas = 0;
 	while (!in_file.eof()) {
 		getline(in_file, buffer);
 		aux_buffer = buffer;
@@ -106,7 +114,6 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 			}
 			parametro++;
 		}
-		//cout << vertice_origem << " " << vertice_destino << " " << _custo << endl;
 		Arestas *aux = new Arestas();
 		aux->setCusto(_custo);
 		aux->setVertice(encontrarFronteira(vertice_destino));
@@ -116,12 +123,31 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 			exit(1);
 		}
 		myGrafo[vertice_origem].push_back(aux);
+		aux_arestas++;
 	}
+
+	// Verificar se as arestas estao corretas no ficheiro
+	//TODO: DEPOIS MUDAR
+	n_arestas = aux_arestas;
+	if (aux_arestas != n_arestas) {
+		system("cls");
+		cout << "Ficheiro nao esta com o formato certo" << endl;
+		exit(1);
+	}
+	list<int> *lista_fronteiras_nos = NoMaisArcos();
 
 	//ShowGrafo
 	mostrarGrafo();
 	cout << "Vertices: " << ContarNos() << " Arestas: " << ContarArcos() << endl;
-	cout << "Memoria ocupada (KB): " << Memoria() << endl;
+	cout << "vertices: " << lista_fronteiras.size() << " Arestas: " << aux_arestas << endl;
+	cout << "Memoria ocupada (Bytes): " << Memoria() << endl;
+	cout << "----------------------" << endl;
+	cout << "Vertices com mais arcos" << endl;
+
+	for (list<int>::iterator it = lista_fronteiras_nos->begin(); it != lista_fronteiras_nos->end(); it++) {
+		cout << (*it) << endl;
+	}
+
 	return NULL;
 }
 
@@ -158,7 +184,7 @@ int Grafo::ContarArcos() {
 //    Quanta memoria está a ser ocupada pelo grafo
 //-------------------------------------------------------------------
 int Grafo::Memoria() {
-	int memoria_ocupada = sizeof(lista_fronteiras) + sizeof(myGrafo);
+	int memoria_ocupada = sizeof(Fronteira) * n_vertices + sizeof(Arestas) * n_arestas;
 	return memoria_ocupada;
 }
 
@@ -168,10 +194,33 @@ int Grafo::Memoria() {
 // Entrada:
 //
 // Retorno:
-//    No/fronteira com mais arcos ( se for mais que um da return numa lista)
+//    No/fronteira com mais arcos (se for mais que um da return numa lista)
 //-------------------------------------------------------------------
 list<int> *Grafo::NoMaisArcos() {
-	return NULL;
+	list<int> *l_fronteiras = new list<int>;
+	int vezes = 0, maior = 1;
+
+	for (int i = 2; i < n_vertices; i++) {
+		if (myGrafo[i].size() == myGrafo[maior].size()) {
+			vezes++;
+		}
+		if (myGrafo[i].size() > myGrafo[maior].size()) {
+			maior = i;
+		}
+	}
+
+	if (!vezes) {
+		l_fronteiras->push_back(maior);
+		return l_fronteiras;
+	}
+	
+	for (int i = 1; i < n_vertices; i++) {
+		if (myGrafo[i].size() == myGrafo[maior].size()) {
+			l_fronteiras->push_back(i);
+		}
+	}
+
+	return l_fronteiras;
 }
 
 //-------------------------------------------------------------------
@@ -210,7 +259,14 @@ list<int> *Grafo::Caminho(int v1, int v2, double &custo_total) {
 //    Lista de vertices isolados
 //-------------------------------------------------------------------
 list<int> *Grafo::VerticesIsolados() {
-	return NULL;
+	list<int> *l_fronteiras = new list<int>;
+
+	for (int i = 1; i <= n_vertices; i++) {
+		if (!myGrafo[i].size) {
+			l_fronteiras->push_back(i);
+		}
+	}
+	return l_fronteiras;
 }
 
 //-------------------------------------------------------------------
@@ -366,7 +422,7 @@ Grafo::~Grafo() {
 }
 
 /* ------------------------- Private Functions ------------------------- */
-Arestas fronteira_arestas(int vertice, int x_pos, int y_pos, int tipo, int _custo = 0) {
+Arestas Grafo::fronteira_arestas(int vertice, int x_pos, int y_pos, int tipo, int _custo) {
 	Arestas current;
 	current.setCusto(_custo);
 
