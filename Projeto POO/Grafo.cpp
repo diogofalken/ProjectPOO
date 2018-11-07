@@ -134,6 +134,8 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		cout << "Ficheiro nao esta com o formato certo" << endl;
 		exit(1);
 	}
+
+	/* TESTES */
 	list<int> *lista_fronteiras_nos = NoMaisArcos();
 
 	//ShowGrafo
@@ -146,6 +148,13 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 
 	for (list<int>::iterator it = lista_fronteiras_nos->begin(); it != lista_fronteiras_nos->end(); it++) {
 		cout << (*it) << endl;
+	}
+
+	if (Adjacencia(1,5) == true) {
+		cout << "Sao adjacentes" << endl;
+	}
+	else {
+		cout << "rekt" << endl;
 	}
 
 	return NULL;
@@ -233,6 +242,11 @@ list<int> *Grafo::NoMaisArcos() {
 //    true/false, mediante serem adjacentes ou nao
 //-------------------------------------------------------------------
 bool Grafo::Adjacencia(int v1, int v2) {
+	for (list<Arestas*>::iterator it = myGrafo[v1].begin(); it != myGrafo[v1].end(); it++) {
+		if ((*it)->getVertice()->getVertice() == v2) {
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -262,7 +276,7 @@ list<int> *Grafo::VerticesIsolados() {
 	list<int> *l_fronteiras = new list<int>;
 
 	for (int i = 1; i <= n_vertices; i++) {
-		if (!myGrafo[i].size) {
+		if (!myGrafo[i].size()) {
 			l_fronteiras->push_back(i);
 		}
 	}
