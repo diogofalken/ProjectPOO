@@ -14,13 +14,20 @@ private:
 	// Da return de uma variavel do tipo Fronteira_vizinha criada tendo em conta o tipo de fronteira
 	Arestas fronteira_arestas(int vertice, int x_pos, int y_pos, int tipo, int _custo = 0);
 
+	// Encontra uma fronteira atraves do numero do vertice
 	Fronteira* encontrarFronteira(int vertice);
 
+	// Cria e retorna uma fronteira do tipo especificado
 	Fronteira* fronteira_vertice_principal(int vertice, int x_pos, int y_pos, int tipo);
 
+	// Mostra lista das fronteiras
 	void mostrarFronteiras();
 	
+	// Mostra o grafo
 	void mostrarGrafo();
+
+	// Encontrar aresta de um vertice
+	bool encontrar_aresta_em_vertice(int vertice1);
 public:
 	// Implemente o construtor do Grafo;
 	Grafo();

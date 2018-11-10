@@ -14,10 +14,11 @@ public:
 	virtual void Mostrar();
 
 	// Devolve o valor do vertice
-	int getVertice();
+	virtual int getVertice();
 
 	// Devolve o tipo de fronteira
 	int getTipo();
+	
 	// Altera o valor do vertice
 	void setVertice(int numero);
 

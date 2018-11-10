@@ -6,6 +6,7 @@ Fronteira::Fronteira(int numero, int _x_pos, int _y_pos) {
 	vertice = numero;
 	x_pos = _x_pos;
 	y_pos = _y_pos;
+	tipo = 0;
 }
 
 //-------------------------------------------------------------------

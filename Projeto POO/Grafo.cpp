@@ -18,7 +18,7 @@
 //
 //-------------------------------------------------------------------
 Grafo::Grafo() {
-
+	
 }
 
 //-------------------------------------------------------------------
@@ -123,6 +123,12 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 			exit(1);
 		}
 		myGrafo[vertice_origem].push_back(aux);
+		
+		// Colocar o mesmo caminho no vertice oposto
+		Arestas *aux1 = new Arestas();
+		aux1->setCusto(_custo);
+		aux1->setVertice(encontrarFronteira(vertice_origem));
+		myGrafo[vertice_destino].push_back(aux1);
 		aux_arestas++;
 	}
 
@@ -137,6 +143,7 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 
 	/* TESTES */
 	list<int> *lista_fronteiras_nos = NoMaisArcos();
+	list<int> *lista_vertices_isolados = VerticesIsolados();
 
 	//ShowGrafo
 	mostrarGrafo();
@@ -150,14 +157,28 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		cout << (*it) << endl;
 	}
 
-	if (Adjacencia(1,5) == true) {
+	if (Adjacencia(1,3) == true) {
 		cout << "Sao adjacentes" << endl;
 	}
 	else {
 		cout << "rekt" << endl;
 	}
 
+	if (Search(50) == true) {
+		cout << "Existe" << endl;
+	}
+	else {
+		cout << "Nao existe" << endl;
+	}
+
+	cout << "----------------------" << endl;
+	for (list<int>::iterator it = lista_vertices_isolados->begin(); it != lista_vertices_isolados->end(); it++) {
+		cout << (*it) << endl;
+	}
+
 	return NULL;
+	delete(lista_fronteiras_nos);
+	delete(lista_vertices_isolados);
 }
 
 //-------------------------------------------------------------------
@@ -292,6 +313,11 @@ list<int> *Grafo::VerticesIsolados() {
 //    true/false, dependendo se encontra ou nao o vertice
 //-------------------------------------------------------------------
 bool Grafo::Search(int v) {
+	for (list<Fronteira*>::iterator it = lista_fronteiras.begin(); it != lista_fronteiras.end(); it++) {
+		if ((*it)->getVertice() == v) {
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -494,7 +520,7 @@ void Grafo::mostrarFronteiras() {
 }
 
 void Grafo::mostrarGrafo() {
-	for (int i = 1; i < n_vertices; i++) {
+	for (int i = 1; i <= n_vertices; i++) {
 		cout << "Caminhos para o vertice " << i << endl;
 		for (list<Arestas*>::iterator it = myGrafo[i].begin(); it != myGrafo[i].end(); it++) {
 			(*it)->Mostrar();

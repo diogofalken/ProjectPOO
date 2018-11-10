@@ -3,7 +3,8 @@
 
 
 Arestas::Arestas() {
-
+	custo = 0;
+	vertice = NULL;
 }
 
 void Arestas::Mostrar() {
@@ -27,6 +28,6 @@ int Arestas::getCusto() {
 	return custo;
 }
 
-Arestas::~Arestas()
-{
+Arestas::~Arestas(){
+	delete(vertice);
 }
