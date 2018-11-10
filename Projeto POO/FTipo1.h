@@ -9,6 +9,8 @@ public:
 
 	void Mostrar();
 
+	int getTipo();
+	
 	~FTipo1();
 };
 

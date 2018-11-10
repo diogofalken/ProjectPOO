@@ -23,6 +23,10 @@ void FTipo2::Mostrar() {
 	cout << "Peso Transportado: " << peso_transportado << endl;
 }
 
+int FTipo2::getTipo() {
+	return 3;
+}
+
 FTipo2::~FTipo2() {
 
 }

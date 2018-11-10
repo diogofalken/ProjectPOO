@@ -11,6 +11,10 @@ void FTipo1::Mostrar() {
 	cout << "Pago: " << preco_pago << endl;
 }
 
+int FTipo1::getTipo() {
+	return 2;
+}
+
 FTipo1::~FTipo1() {
 
 }

@@ -14,6 +14,8 @@ public:
 	// Aumentar 1kg sempre que passa por uma fronteira do tipo 2
 	void PassarPelaFronteira();
 
+	int getTipo();
+
 	// Mostrar peso_transportado
 	void Mostrar();
 };
