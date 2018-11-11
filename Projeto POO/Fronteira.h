@@ -17,7 +17,7 @@ public:
 	virtual int getVertice();
 
 	// Devolve o tipo de fronteira
-	int getTipo();
+	virtual int getTipo();
 	
 	// Altera o valor do vertice
 	void setVertice(int numero);

@@ -144,6 +144,7 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	/* TESTES */
 	list<int> *lista_fronteiras_nos = NoMaisArcos();
 	list<int> *lista_vertices_isolados = VerticesIsolados();
+	list<int> *lista_vertices_tipo = DevolveVerticesTipo("1");
 
 	//ShowGrafo
 	mostrarGrafo();
@@ -176,9 +177,15 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		cout << (*it) << endl;
 	}
 
+	cout << "----------------------" << endl;
+	for (list<int>::iterator it = lista_vertices_tipo->begin(); it != lista_vertices_tipo->end(); it++) {
+		cout << (*it) << endl;
+	}
+
 	return NULL;
 	delete(lista_fronteiras_nos);
 	delete(lista_vertices_isolados);
+	delete(lista_vertices_tipo);
 }
 
 //-------------------------------------------------------------------
@@ -282,7 +289,26 @@ bool Grafo::Adjacencia(int v1, int v2) {
 //    caminho entre o vertice 1 e o vertice 2
 //-------------------------------------------------------------------
 list<int> *Grafo::Caminho(int v1, int v2, double &custo_total) {
-	return NULL;
+	list<int> visitados;
+	list<int> *caminho = new list<int>;
+	int current = v1;
+	// O inicio ja foi "visitado"
+	visitados.push_back(v1);
+	caminho->push_back(current);
+
+	while (current != v2) {
+		for (list<Arestas*>::iterator it = myGrafo[current].begin(); it != myGrafo[current].end(); it++) {
+			if ((*it)->getVertice()->getVertice() == v2) {
+				visitados.push_back(current);
+				current = (*it)->getVertice()->getVertice();
+				caminho->push_back(current);
+			}
+			else {
+
+			}
+		}
+	}
+	return caminho;
 }
 
 //-------------------------------------------------------------------
@@ -379,7 +405,14 @@ bool Grafo::LerXML(const string &s) {
 //    lista com os vertices do grafo do tipo pretendido
 //-------------------------------------------------------------------
 list<int> *Grafo::DevolveVerticesTipo(const string &tipo) {
-	return NULL;
+	list<int> *lista_vertices_tipo = new list<int>;
+
+	for (list<Fronteira*>::iterator it = lista_fronteiras.begin(); it != lista_fronteiras.end(); it++) {
+		if ((*it)->getTipo() == atoi(tipo.c_str())) {
+			lista_vertices_tipo->push_back((*it)->getVertice());
+		}
+	}
+	return lista_vertices_tipo;
 }
 
 //-------------------------------------------------------------------
