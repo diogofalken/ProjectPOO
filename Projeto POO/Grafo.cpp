@@ -6,7 +6,7 @@
 #include "FTipo1.h"
 #include "FTipo2.h"
 
-
+#include <vector>
 #define DELIMITADOR_FICHEIRO "//-------------------"
 
 //-------------------------------------------------------------------
@@ -145,6 +145,8 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	list<int> *lista_fronteiras_nos = NoMaisArcos();
 	list<int> *lista_vertices_isolados = VerticesIsolados();
 	list<int> *lista_vertices_tipo = DevolveVerticesTipo("1");
+	double custo = 0;
+	list<int> *lista_caminho = Caminho(4, 13, custo);
 
 	//ShowGrafo
 	mostrarGrafo();
@@ -182,10 +184,17 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		cout << (*it) << endl;
 	}
 
-	return NULL;
+	cout << "----------------------" << endl;
+	for (list<int>::iterator it = lista_caminho->begin(); it != lista_caminho->end(); it++) {
+		cout << (*it) << endl;
+	}
+	cout << custo << endl;
+
 	delete(lista_fronteiras_nos);
 	delete(lista_vertices_isolados);
 	delete(lista_vertices_tipo);
+	delete(lista_caminho);
+	return NULL;
 }
 
 //-------------------------------------------------------------------
@@ -288,27 +297,40 @@ bool Grafo::Adjacencia(int v1, int v2) {
 // Retorno:
 //    caminho entre o vertice 1 e o vertice 2
 //-------------------------------------------------------------------
-list<int> *Grafo::Caminho(int v1, int v2, double &custo_total) {
-	list<int> visitados;
+
+
+/*list<int> *Grafo::Caminho(int v1, int v2, double &custo_total) {
+	list<int> nextToVisit;
+	list<int> visited;
 	list<int> *caminho = new list<int>;
-	int current = v1;
-	// O inicio ja foi "visitado"
-	visitados.push_back(v1);
-	caminho->push_back(current);
+	nextToVisit.push_back(v1);
 
-	while (current != v2) {
-		for (list<Arestas*>::iterator it = myGrafo[current].begin(); it != myGrafo[current].end(); it++) {
-			if ((*it)->getVertice()->getVertice() == v2) {
-				visitados.push_back(current);
-				current = (*it)->getVertice()->getVertice();
-				caminho->push_back(current);
-			}
-			else {
+	while (!nextToVisit.empty()) {
+		int no = nextToVisit.front();
+		nextToVisit.pop_front();
 
-			}
+		if (no == v2) {
+			return caminho;
 		}
-	}
-	return caminho;
+
+		if (find(visited.begin(), visited.end(), no) != visited.end()) {
+			continue;
+		}
+		caminho->push_back(no);
+		visited.push_back(no);
+
+		for (auto it = myGrafo[no].begin(); it != myGrafo[no].end(); it++) {
+			custo_total += (*it)->getCusto();
+			nextToVisit.push_back((*it)->getVertice()->getVertice());
+		}
+	}	
+	return NULL;
+}*/
+
+list<int> *Grafo::Caminho(int v1, int v2, double &custo_total) {
+	list<int> visited;
+	list<int> *caminho = new list<int>;
+	return Caminho(v1, v2, visited, caminho, custo_total);
 }
 
 //-------------------------------------------------------------------
@@ -560,4 +582,41 @@ void Grafo::mostrarGrafo() {
 		}
 		cout << "-----------------------------" << endl;
 	}
+}
+
+list<int> *Grafo::Caminho(int source, int destination, list<int> visited, list<int> *caminho, double &custo_total) {
+	if (find(visited.begin(), visited.end(), source) != visited.end()) {
+		return false;
+	}
+	visited.push_back(source);
+	caminho->push_back(source);
+
+	if (source == destination) {
+		cout << "Erro" << endl;
+		for (auto it1 = caminho->begin(); it1 != caminho->end(); ++it1) {
+			// Verificar se o proximo elemento do iterator e = a NULL
+			if (++it1 == caminho->end()) {
+				break; // Se for da break
+			}
+			--it1; // Senao volta ao iterator onde estava
+
+			for (auto it2 = myGrafo[*it1].begin(); it2 != myGrafo[*it1].end(); ++it2) {
+				// Verifica se o vertice de it2 e igual ao proximo vertice do caminho
+				if ((*it2)->getVertice()->getVertice() == *(++it1)) {
+					custo_total += (*it2)->getCusto();
+				}
+				// retomar o endereco de it1
+				--it1;
+			}
+		}
+		return caminho;
+	}
+
+	for (auto it = myGrafo[source].begin(); it != myGrafo[source].end(); it++) {
+		if (Caminho((*it)->getVertice()->getVertice(), destination, visited, caminho, custo_total)) {
+			return caminho;
+		}
+	}
+	caminho->pop_back();
+	return false;
 }
