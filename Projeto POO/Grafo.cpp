@@ -18,7 +18,7 @@
 //
 //-------------------------------------------------------------------
 Grafo::Grafo() {
-	
+
 }
 
 //-------------------------------------------------------------------
@@ -57,7 +57,7 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		aux_buffer = buffer;
 		stringstream ss(buffer);
 		parametro = 0;
-		
+
 		// Se a string for igual ao Delimitador de Arestas/Vertices parar
 		if (aux_buffer == DELIMITADOR_FICHEIRO) {
 			break;
@@ -82,7 +82,7 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		Fronteira *current = fronteira_vertice_principal(vertice, x, y, tipo);
 		lista_fronteiras.push_back(current);
 	}
-	
+
 	// Verificar se os vertices estao corretos no ficheiro
 	// TODO: Depois MUDAR
 	n_vertices = lista_fronteiras.size();
@@ -118,12 +118,12 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		aux->setCusto(_custo);
 		aux->setVertice(encontrarFronteira(vertice_destino));
 		// Se o vertice nao existir
-		if ( aux->getVertice()->getVertice() == NULL) {
+		if (aux->getVertice()->getVertice() == NULL) {
 			cout << "ERROR" << endl;
 			exit(1);
 		}
 		myGrafo[vertice_origem].push_back(aux);
-		
+
 		// Colocar o mesmo caminho no vertice oposto
 		Arestas *aux1 = new Arestas();
 		aux1->setCusto(_custo);
@@ -146,7 +146,7 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	list<int> *lista_vertices_isolados = VerticesIsolados();
 	list<int> *lista_vertices_tipo = DevolveVerticesTipo("1");
 	double custo = 0;
-	list<int> *lista_caminho = Caminho(4, 13, custo);
+	list<int> *lista_caminho = Caminho(4, 9, custo);
 
 	//ShowGrafo
 	mostrarGrafo();
@@ -160,7 +160,7 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		cout << (*it) << endl;
 	}
 
-	if (Adjacencia(1,3) == true) {
+	if (Adjacencia(1, 3) == true) {
 		cout << "Sao adjacentes" << endl;
 	}
 	else {
@@ -185,10 +185,18 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	}
 
 	cout << "----------------------" << endl;
-	for (list<int>::iterator it = lista_caminho->begin(); it != lista_caminho->end(); it++) {
-		cout << (*it) << endl;
+	if (lista_caminho == NULL) {
+		cout << "Nao existe caminho" << endl;
 	}
-	cout << custo << endl;
+	else {
+		for (list<int>::iterator it = lista_caminho->begin(); it != lista_caminho->end(); it++) {
+			cout << (*it) << endl;
+		}
+		cout << "Custo: " << custo << endl;
+	}
+	cout << "----------------------" << endl;
+	custo = 0;
+	cout << "Caminho Minimo: " << CaminhoMinimo(4, 13, custo) << endl;
 
 	delete(lista_fronteiras_nos);
 	delete(lista_vertices_isolados);
@@ -259,7 +267,7 @@ list<int> *Grafo::NoMaisArcos() {
 		l_fronteiras->push_back(maior);
 		return l_fronteiras;
 	}
-	
+
 	for (int i = 1; i < n_vertices; i++) {
 		if (myGrafo[i].size() == myGrafo[maior].size()) {
 			l_fronteiras->push_back(i);
@@ -297,36 +305,6 @@ bool Grafo::Adjacencia(int v1, int v2) {
 // Retorno:
 //    caminho entre o vertice 1 e o vertice 2
 //-------------------------------------------------------------------
-
-
-/*list<int> *Grafo::Caminho(int v1, int v2, double &custo_total) {
-	list<int> nextToVisit;
-	list<int> visited;
-	list<int> *caminho = new list<int>;
-	nextToVisit.push_back(v1);
-
-	while (!nextToVisit.empty()) {
-		int no = nextToVisit.front();
-		nextToVisit.pop_front();
-
-		if (no == v2) {
-			return caminho;
-		}
-
-		if (find(visited.begin(), visited.end(), no) != visited.end()) {
-			continue;
-		}
-		caminho->push_back(no);
-		visited.push_back(no);
-
-		for (auto it = myGrafo[no].begin(); it != myGrafo[no].end(); it++) {
-			custo_total += (*it)->getCusto();
-			nextToVisit.push_back((*it)->getVertice()->getVertice());
-		}
-	}	
-	return NULL;
-}*/
-
 list<int> *Grafo::Caminho(int v1, int v2, double &custo_total) {
 	list<int> visited;
 	list<int> *caminho = new list<int>;
@@ -447,8 +425,52 @@ list<int> *Grafo::DevolveVerticesTipo(const string &tipo) {
 // Retorno:
 //    lista dos vertices com o caminho mais curto entre v1 e v2
 //-------------------------------------------------------------------
-list<int> *Grafo::CaminhoMinimo(int v1, int v2, double &custo_total) {
-	return NULL;
+//list<int> *Grafo::CaminhoMinimo(int v1, int v2, double &custo_total)
+const int inf = 1 << 30;
+int Grafo::CaminhoMinimo(int v1, int v2, double &custo_total) {
+	vector<int> dist(n_vertices + 1);
+	vector<bool> vis(n_vertices + 1);
+
+	// Inicializar todas as distancias como infinito
+	for (int i = 1; i <= n_vertices; ++i) {
+		dist[i] = inf;
+	}
+	// A distancia do source ate ela mesma e 0
+	dist[v1] = 0;
+	int erro = 1;
+
+	for (int i = 1; i <= n_vertices; ++i) {
+		int cur = -1;
+		for(auto it = myGrafo[i].begin(); it != myGrafo[i].end(); ++it) {
+			if (vis[(*it)->getVertice()->getVertice()]) continue;
+			if (cur == -1 || (dist[(*it)->getVertice()->getVertice()] < dist[cur])) {
+				cur = (*it)->getVertice()->getVertice();
+				erro = 0;
+			}
+		}
+
+		if (!erro) {
+			vis[cur] = true;
+		}
+		else {
+			vis[i] = true;
+			dist[i] = 0;
+		}
+
+		for (auto it = myGrafo[cur].begin(); it != myGrafo[cur].end() && erro != 1; ++it) {
+			int path = dist[cur] + (*it)->getCusto();
+			if (path < dist[(*it)->getVertice()->getVertice()]) {
+				dist[(*it)->getVertice()->getVertice()] = path;
+			}
+			erro = 1;
+		}
+	}
+	for (int i = 1; i <= n_vertices; ++i) {
+		cout << "Vertice " << i << ": " << dist[i] << endl;
+	}
+
+	system("break");
+	return dist[v2];
 }
 
 //-------------------------------------------------------------------
@@ -592,7 +614,6 @@ list<int> *Grafo::Caminho(int source, int destination, list<int> visited, list<i
 	caminho->push_back(source);
 
 	if (source == destination) {
-		cout << "Erro" << endl;
 		for (auto it1 = caminho->begin(); it1 != caminho->end(); ++it1) {
 			// Verificar se o proximo elemento do iterator e = a NULL
 			if (++it1 == caminho->end()) {
@@ -609,6 +630,7 @@ list<int> *Grafo::Caminho(int source, int destination, list<int> visited, list<i
 				--it1;
 			}
 		}
+
 		return caminho;
 	}
 

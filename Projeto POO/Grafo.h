@@ -79,8 +79,9 @@ public:
 	list<int> *DevolveVerticesTipo(const string &tipo);
 
 	// Determinar o caminho minimo entre 2 nos, devolvendo o custo total;
-	list<int> *CaminhoMinimo(int v1, int v2, double &custo_total);
-
+	//list<int> *CaminhoMinimo(int v1, int v2, double &custo_total);
+	int CaminhoMinimo(int v1, int v2, double &custo_total);
+	
 	// Determinar o caminho maximo entre 2 nos (passando somente uma vez em cada vertice), devolvendo o custo total;
 	list<int> *CaminhoMaximo(int v1, int v2, double &custo_total);
 
