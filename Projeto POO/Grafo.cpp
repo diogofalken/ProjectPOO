@@ -145,8 +145,9 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	list<int> *lista_fronteiras_nos = NoMaisArcos();
 	list<int> *lista_vertices_isolados = VerticesIsolados();
 	list<int> *lista_vertices_tipo = DevolveVerticesTipo("1");
-	double custo = 0;
+	double custo = 0, custo_minimo = 0;
 	list<int> *lista_caminho = Caminho(4, 9, custo);
+	list<int> *caminho_curto = CaminhoMinimo(4, 20, custo_minimo);
 
 	//ShowGrafo
 	mostrarGrafo();
@@ -195,13 +196,22 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		cout << "Custo: " << custo << endl;
 	}
 	cout << "----------------------" << endl;
-	custo = 0;
-	cout << "Caminho Minimo: " << CaminhoMinimo(4, 13, custo) << endl;
+	if (caminho_curto->size() == 1) {
+		cout << "Nao existe caminho" << endl;
+	}
+	else {
+		for (list<int>::iterator it = caminho_curto->begin(); it != caminho_curto->end(); it++) {
+			cout << (*it) << endl;
+		}
+		cout << "Custo: " << custo_minimo << endl;
+	}
 
+	CaminhoMaximo(4, 1, custo);
 	delete(lista_fronteiras_nos);
 	delete(lista_vertices_isolados);
 	delete(lista_vertices_tipo);
 	delete(lista_caminho);
+	delete(caminho_curto);
 	return NULL;
 }
 
@@ -425,52 +435,51 @@ list<int> *Grafo::DevolveVerticesTipo(const string &tipo) {
 // Retorno:
 //    lista dos vertices com o caminho mais curto entre v1 e v2
 //-------------------------------------------------------------------
-//list<int> *Grafo::CaminhoMinimo(int v1, int v2, double &custo_total)
-const int inf = 1 << 30;
-int Grafo::CaminhoMinimo(int v1, int v2, double &custo_total) {
-	vector<int> dist(n_vertices + 1);
-	vector<bool> vis(n_vertices + 1);
+list<int> *Grafo::CaminhoMinimo(int source, int destination, double &custo_total) {
+	vector<int> distance(n_vertices + 1);     // The output array.  distance[i] will hold the shortest 
+					 // distance from src to i 
+	vector<int> parent(n_vertices + 1);
+	vector<bool> visited(n_vertices + 1); // visited[i] will true if vertex i is included in shortest 
+					// shortest distance from source to i is finalized (aka already visited) 
 
-	// Inicializar todas as distancias como infinito
-	for (int i = 1; i <= n_vertices; ++i) {
-		dist[i] = inf;
+	// Initialize all distances as INT_MAX and visited[] as false 
+	for (int i = 1; i <= n_vertices; i++) {
+		distance[i] = INT_MAX;
+		visited[i] = false;
+		parent[0] = -1;
 	}
-	// A distancia do source ate ela mesma e 0
-	dist[v1] = 0;
-	int erro = 1;
 
-	for (int i = 1; i <= n_vertices; ++i) {
-		int cur = -1;
-		for(auto it = myGrafo[i].begin(); it != myGrafo[i].end(); ++it) {
-			if (vis[(*it)->getVertice()->getVertice()]) continue;
-			if (cur == -1 || (dist[(*it)->getVertice()->getVertice()] < dist[cur])) {
-				cur = (*it)->getVertice()->getVertice();
-				erro = 0;
+	// Distance of source vertex from itself is always 0 
+	distance[source] = 0;
+
+	// Find shortest path for all vertices 
+	for (int count = 1; count < n_vertices; count++)
+	{
+		// Pick the minimum distance vertex from the set of vertices not 
+		// yet processed. u is always equal to src in the first iteration. 
+		int u = minDistance(distance, visited);
+
+		// Mark the picked vertex as processed 
+		visited[u] = true;
+
+		// Update distance value of the adjacent vertices of the picked vertex. 
+		for (auto it = myGrafo[u].begin(); it != myGrafo[u].end(); ++it) {
+			// Update distance[v] only if is not in visited, there is an edge from  
+			// u to v, and total weight of path from src to  v through u is  
+			// smaller than current value of distance[v] 
+			if (!visited[(*it)->getVertice()->getVertice()] && (*it)->getCusto() && distance[u] != INT_MAX
+				&& distance[u] + (*it)->getCusto() < distance[(*it)->getVertice()->getVertice()]) {
+				// Change the current destination of vertice
+				parent[(*it)->getVertice()->getVertice()] = u;
+				distance[(*it)->getVertice()->getVertice()] = distance[u] + (*it)->getCusto();
 			}
 		}
-
-		if (!erro) {
-			vis[cur] = true;
-		}
-		else {
-			vis[i] = true;
-			dist[i] = 0;
-		}
-
-		for (auto it = myGrafo[cur].begin(); it != myGrafo[cur].end() && erro != 1; ++it) {
-			int path = dist[cur] + (*it)->getCusto();
-			if (path < dist[(*it)->getVertice()->getVertice()]) {
-				dist[(*it)->getVertice()->getVertice()] = path;
-			}
-			erro = 1;
-		}
 	}
-	for (int i = 1; i <= n_vertices; ++i) {
-		cout << "Vertice " << i << ": " << dist[i] << endl;
-	}
-
-	system("break");
-	return dist[v2];
+	// Allocate list of shortest path
+	list<int> *caminho = new list<int>;
+	CopiarCaminhoParent(parent, destination, caminho);
+	custo_total = distance[destination];
+	return caminho;
 }
 
 //-------------------------------------------------------------------
@@ -483,8 +492,17 @@ int Grafo::CaminhoMinimo(int v1, int v2, double &custo_total) {
 // Retorno:
 //    lista dos vertices com o caminho maximo entre v1 e v2
 //-------------------------------------------------------------------
-list<int> *Grafo::CaminhoMaximo(int v1, int v2, double &custo_total) {
-	return NULL;
+//list<int> *Grafo::CaminhoMaximo(int v1, int v2, double &custo_total) {
+void Grafo::CaminhoMaximo(int v1, int v2, double &custo_total) {
+	vector<int> visited(n_vertices + 1, 0);
+	list<int> *caminho = new list<int>;
+	int x = CaminhoMaximo(v1, v2, visited, caminho, custo_total);
+
+	for (auto it = caminho->begin(); it != caminho->end(); it++) {
+		cout << *it << endl;
+	}
+	system("pause");
+	//return CaminhoMaximo(v1, v2, visited, custo_total);
 }
 
 //-------------------------------------------------------------------
@@ -641,4 +659,50 @@ list<int> *Grafo::Caminho(int source, int destination, list<int> visited, list<i
 	}
 	caminho->pop_back();
 	return false;
+}
+
+int Grafo::CaminhoMaximo(int v1, int v2, vector<int> visited, list<int> *caminho, double &custo_total) {
+	int maxv = -1;
+	int erro = 0;
+	caminho->push_back(v1);
+	if (v1 == v2) {
+		caminho->pop_back();
+		return 0;
+	}
+
+	visited[v1] = 1;
+	for (auto it = myGrafo[v1].begin(); it != myGrafo[v1].end(); it++) {
+		erro = 1;
+		if (visited[(*it)->getVertice()->getVertice()] == 0) {
+			int maxw = CaminhoMaximo((*it)->getVertice()->getVertice(), v2, visited, caminho, custo_total);
+			if (maxw != -1 && maxv < (*it)->getCusto() + maxw)
+				maxv = (*it)->getCusto() + maxw;
+		}
+	}
+
+	if (erro == 1) {
+		caminho->pop_back();
+	}
+	visited[v1] = 0; // atenção!
+	return maxv;
+}
+
+int Grafo::minDistance(vector<int> dist, vector<bool> sptSet)
+{
+	// Initialize min value 
+	int min = INT_MAX, min_index;
+
+	for (int v = 1; v <= n_vertices; v++)
+		if (sptSet[v] == false && dist[v] <= min)
+			min = dist[v], min_index = v;
+
+	return min_index;
+}
+
+void Grafo::CopiarCaminhoParent(vector<int> parent, int j, list<int> *caminho) {
+	// Base Case : If j is source 
+	if (parent[j] == -1)
+		return;
+	CopiarCaminhoParent(parent, parent[j], caminho);
+	caminho->push_back(j);
 }

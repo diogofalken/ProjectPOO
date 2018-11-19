@@ -28,6 +28,12 @@ private:
 	
 	// Funcao recursiva para encontrar o caminho
 	list<int> *Caminho(int source, int destination, list<int> visited, list<int> *caminho, double &custo_total);
+
+	int CaminhoMaximo(int v1, int v2, vector<int> visited, list<int> *caminho, double &custo_total);
+
+	int minDistance(vector<int> dist, vector<bool> sptSet);
+
+	void CopiarCaminhoParent(vector<int> parent, int j, list<int> *caminho);
 public:
 	// Implemente o construtor do Grafo;
 	Grafo();
@@ -79,11 +85,12 @@ public:
 	list<int> *DevolveVerticesTipo(const string &tipo);
 
 	// Determinar o caminho minimo entre 2 nos, devolvendo o custo total;
-	//list<int> *CaminhoMinimo(int v1, int v2, double &custo_total);
-	int CaminhoMinimo(int v1, int v2, double &custo_total);
+	list<int> *CaminhoMinimo(int source, int destination, double &custo_total);
+	//int CaminhoMinimo(int v1, int v2, double &custo_total);
 	
 	// Determinar o caminho maximo entre 2 nos (passando somente uma vez em cada vertice), devolvendo o custo total;
-	list<int> *CaminhoMaximo(int v1, int v2, double &custo_total);
+	//list<int> *CaminhoMaximo(int v1, int v2, double &custo_total);
+	void CaminhoMaximo(int v1, int v2, double &custo_total);
 
 	// Sera possivel ir de uma fronteira(v1) a outra(v2), passando somente por fronteiras de um dado tipo?
 	bool PossivelCaminho(int v1, int v2, int TipoFronteira);
