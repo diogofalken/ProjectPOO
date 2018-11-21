@@ -95,6 +95,11 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 
 	// Variaveis auxiliares para as arestas
 	int vertice_origem, vertice_destino, _custo, aux_arestas = 0;
+	for (int i = 1; i <= n_vertices; ++i) {
+		myGrafo[i].push_back(NULL);
+		myGrafo[i].remove(NULL);
+	}
+
 	while (!in_file.eof()) {
 		getline(in_file, buffer);
 		aux_buffer = buffer;
@@ -145,10 +150,17 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	list<int> *lista_fronteiras_nos = NoMaisArcos();
 	list<int> *lista_vertices_isolados = VerticesIsolados();
 	list<int> *lista_vertices_tipo = DevolveVerticesTipo("1");
-	double custo = 0, custo_minimo = 0;
+	double custo = 0, custo_minimo = 0, custo_maximo = 0;
 	list<int> *lista_caminho = Caminho(4, 9, custo);
-	list<int> *caminho_curto = CaminhoMinimo(4, 20, custo_minimo);
-
+	list<int> *caminho_curto = CaminhoMinimo(4, 13, custo_minimo);
+	list<int> *caminho_maximo = CaminhoMaximo(4, 13, custo_maximo);
+	
+	if (RemoverVertice(1)) {
+		cout << "Foi removida a aresta 1 - 2" << endl;
+	}
+	else {
+		cout << "NAO FOI REMOVIDA" << endl;
+	}
 	//ShowGrafo
 	mostrarGrafo();
 	cout << "Vertices: " << ContarNos() << " Arestas: " << ContarArcos() << endl;
@@ -205,13 +217,19 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		}
 		cout << "Custo: " << custo_minimo << endl;
 	}
+	/*cout << "--------- CAMINHO MAXIMO -------------" << endl;
 
-	CaminhoMaximo(4, 1, custo);
+	for (list<int>::iterator it = caminho_maximo->begin(); it != caminho_maximo->end(); it++) {
+		cout << (*it) << endl;
+	}
+	cout << "Custo: " << custo_maximo << endl;
+*/
 	delete(lista_fronteiras_nos);
 	delete(lista_vertices_isolados);
 	delete(lista_vertices_tipo);
 	delete(lista_caminho);
 	delete(caminho_curto);
+	delete(caminho_maximo);
 	return NULL;
 }
 
@@ -262,14 +280,17 @@ int Grafo::Memoria() {
 //-------------------------------------------------------------------
 list<int> *Grafo::NoMaisArcos() {
 	list<int> *l_fronteiras = new list<int>;
-	int vezes = 0, maior = 1;
+	int vezes = 0, maior;
 
-	for (int i = 2; i < n_vertices; i++) {
-		if (myGrafo[i].size() == myGrafo[maior].size()) {
+	for (auto it = myGrafo.begin(); it != myGrafo.end(); it++) {
+		if (it == myGrafo.begin()) {
+			maior = (*it).first;
+		}
+		if (myGrafo[(*it).first].size() == myGrafo[maior].size()) {
 			vezes++;
 		}
-		if (myGrafo[i].size() > myGrafo[maior].size()) {
-			maior = i;
+		if (myGrafo[(*it).first].size() > myGrafo[maior].size()) {
+			maior = (*it).first;
 		}
 	}
 
@@ -278,9 +299,9 @@ list<int> *Grafo::NoMaisArcos() {
 		return l_fronteiras;
 	}
 
-	for (int i = 1; i < n_vertices; i++) {
-		if (myGrafo[i].size() == myGrafo[maior].size()) {
-			l_fronteiras->push_back(i);
+	for (auto it = myGrafo.begin(); it != myGrafo.end(); it++) {
+		if (myGrafo[(*it).first].size() == myGrafo[maior].size()) {
+			l_fronteiras->push_back((*it).first);
 		}
 	}
 
@@ -297,6 +318,9 @@ list<int> *Grafo::NoMaisArcos() {
 //    true/false, mediante serem adjacentes ou nao
 //-------------------------------------------------------------------
 bool Grafo::Adjacencia(int v1, int v2) {
+	if (!fronteiraExiste(v1) && !fronteiraExiste(v2)) {
+		return false;
+	}
 	for (list<Arestas*>::iterator it = myGrafo[v1].begin(); it != myGrafo[v1].end(); it++) {
 		if ((*it)->getVertice()->getVertice() == v2) {
 			return true;
@@ -329,12 +353,13 @@ list<int> *Grafo::Caminho(int v1, int v2, double &custo_total) {
 // Retorno:
 //    Lista de vertices isolados
 //-------------------------------------------------------------------
+// TODO: CORRIGIR, isto esta dar mal porque com o auto ele nao conta os vertices que nao tem arestas
 list<int> *Grafo::VerticesIsolados() {
 	list<int> *l_fronteiras = new list<int>;
 
-	for (int i = 1; i <= n_vertices; i++) {
-		if (!myGrafo[i].size()) {
-			l_fronteiras->push_back(i);
+	for (auto it = myGrafo.begin(); it != myGrafo.end(); ++it) {
+		if (!myGrafo[(*it).first].size()) {
+			l_fronteiras->push_back((*it).first);
 		}
 	}
 	return l_fronteiras;
@@ -366,7 +391,21 @@ bool Grafo::Search(int v) {
 //    true/false, dependendo se o vertice foi removido ou nao
 //-------------------------------------------------------------------
 bool Grafo::RemoverVertice(int v) {
-	return false;
+	// Percorrer todas os vertices a qual ele está diretamente ligado
+	for (auto it = myGrafo[v].begin(); it != myGrafo[v].end(); ++it) {
+		RemoverAresta(v, (*it)->getVertice()->getVertice());
+		it = myGrafo[v].begin();
+		if (it == myGrafo[v].end()) {
+			break;
+		}
+	}
+
+	// Remover da lista de fronteiras e deletar de memoria
+	myGrafo.erase(v);
+	Fronteira* aux = encontrarFronteira(v);
+	lista_fronteiras.remove(aux);
+	delete(aux);
+	return true;
 }
 
 //-------------------------------------------------------------------
@@ -379,6 +418,20 @@ bool Grafo::RemoverVertice(int v) {
 //    true/false, dependendo se o aresta foi removida ou nao
 //-------------------------------------------------------------------
 bool Grafo::RemoverAresta(int v1, int v2) {
+	// Remover a aresta do vertice v1
+	for (auto it = myGrafo[v1].begin(); it != myGrafo[v1].end(); ++it) {
+		if ((*it)->getVertice()->getVertice() == v2) {
+			myGrafo[v1].remove(*it);
+
+			// Remover a aresta do vertice v2
+			for (auto it = myGrafo[v2].begin(); it != myGrafo[v2].end(); ++it) {
+				if ((*it)->getVertice()->getVertice() == v1) {
+					myGrafo[v2].remove(*it);
+					return true;
+				}
+			}
+		}
+	}
 	return false;
 }
 
@@ -435,7 +488,7 @@ list<int> *Grafo::DevolveVerticesTipo(const string &tipo) {
 // Retorno:
 //    lista dos vertices com o caminho mais curto entre v1 e v2
 //-------------------------------------------------------------------
-list<int> *Grafo::CaminhoMinimo(int source, int destination, double &custo_total) {
+list<int> *Grafo::CaminhoMinimo(int v1, int v2, double &custo_total) {
 	vector<int> distance(n_vertices + 1);     // The output array.  distance[i] will hold the shortest 
 					 // distance from src to i 
 	vector<int> parent(n_vertices + 1);
@@ -450,11 +503,10 @@ list<int> *Grafo::CaminhoMinimo(int source, int destination, double &custo_total
 	}
 
 	// Distance of source vertex from itself is always 0 
-	distance[source] = 0;
+	distance[v1] = 0;
 
 	// Find shortest path for all vertices 
-	for (int count = 1; count < n_vertices; count++)
-	{
+	for (auto it1 = myGrafo.begin(); it1 != myGrafo.end(); it1++) {
 		// Pick the minimum distance vertex from the set of vertices not 
 		// yet processed. u is always equal to src in the first iteration. 
 		int u = minDistance(distance, visited);
@@ -477,11 +529,16 @@ list<int> *Grafo::CaminhoMinimo(int source, int destination, double &custo_total
 	}
 	// Allocate list of shortest path
 	list<int> *caminho = new list<int>;
-	CopiarCaminhoParent(parent, destination, caminho);
-	custo_total = distance[destination];
+	CopiarCaminhoParent(parent, v2, caminho);
+	custo_total = distance[v2];
+	list<int>::iterator it = --caminho->end();
+
+	if ((*it) != v2) {
+		for (int i = 0; i < caminho->size(); i++)
+			caminho->pop_back();
+	}
 	return caminho;
 }
-
 //-------------------------------------------------------------------
 //Método: CaminhoMaximo
 //Parametros:
@@ -493,7 +550,7 @@ list<int> *Grafo::CaminhoMinimo(int source, int destination, double &custo_total
 //    lista dos vertices com o caminho maximo entre v1 e v2
 //-------------------------------------------------------------------
 //list<int> *Grafo::CaminhoMaximo(int v1, int v2, double &custo_total) {
-void Grafo::CaminhoMaximo(int v1, int v2, double &custo_total) {
+/*void Grafo::CaminhoMaximo(int v1, int v2, double &custo_total) {
 	vector<int> visited(n_vertices + 1, 0);
 	list<int> *caminho = new list<int>;
 	int x = CaminhoMaximo(v1, v2, visited, caminho, custo_total);
@@ -503,6 +560,9 @@ void Grafo::CaminhoMaximo(int v1, int v2, double &custo_total) {
 	}
 	system("pause");
 	//return CaminhoMaximo(v1, v2, visited, custo_total);
+}*/
+list<int> *Grafo::CaminhoMaximo(int v1, int v2, double &custo_total) {
+	return NULL;
 }
 
 //-------------------------------------------------------------------
@@ -648,7 +708,6 @@ list<int> *Grafo::Caminho(int source, int destination, list<int> visited, list<i
 				--it1;
 			}
 		}
-
 		return caminho;
 	}
 
@@ -687,8 +746,7 @@ int Grafo::CaminhoMaximo(int v1, int v2, vector<int> visited, list<int> *caminho
 	return maxv;
 }
 
-int Grafo::minDistance(vector<int> dist, vector<bool> sptSet)
-{
+int Grafo::minDistance(vector<int> dist, vector<bool> sptSet) {
 	// Initialize min value 
 	int min = INT_MAX, min_index;
 
