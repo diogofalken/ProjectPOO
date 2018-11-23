@@ -7,6 +7,7 @@ Fronteira::Fronteira(int numero, int _x_pos, int _y_pos) {
 	x_pos = _x_pos;
 	y_pos = _y_pos;
 	tipo = 0;
+	visitas = 0;
 }
 
 //-------------------------------------------------------------------
@@ -50,6 +51,20 @@ int Fronteira::getTipo() {
 //-------------------------------------------------------------------
 void Fronteira::setVertice(int numero) {
 	vertice = numero;
+}
+
+void Fronteira::visitouFronteira() {
+	visitas++;
+}
+
+// Devolve a posicao x
+int Fronteira::getX_pos() {
+	return x_pos;
+}
+
+// Devolve a posicao y
+int Fronteira::getY_pos() {
+	return y_pos;
 }
 
 Fronteira::~Fronteira() {

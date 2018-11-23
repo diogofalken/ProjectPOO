@@ -3,10 +3,11 @@
 
 class Fronteira {
 private:
-	unsigned int vertice;
-	unsigned int x_pos;
-	unsigned int y_pos;
-	unsigned int tipo;
+	int vertice;
+	int x_pos;
+	int y_pos;
+	int tipo;
+	int visitas;
 public:
 	Fronteira(int numero, int _x_pos, int _y_pos);
 
@@ -18,9 +19,18 @@ public:
 
 	// Devolve o tipo de fronteira
 	virtual int getTipo();
+
+	// Devolve a posicao x
+	virtual int getX_pos();
+
+	// Devolve a posicao y
+	virtual int getY_pos();
 	
 	// Altera o valor do vertice
 	void setVertice(int numero);
+
+	// Aumenta 1 visita na fronteira
+	void visitouFronteira();
 
 	~Fronteira();
 };

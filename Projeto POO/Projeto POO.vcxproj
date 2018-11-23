@@ -159,6 +159,7 @@
     <ClInclude Include="Grafo.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Uteis.h" />
+    <ClInclude Include="XMLWriter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Arestas.cpp" />
@@ -175,6 +176,7 @@
     </ClCompile>
     <ClCompile Include="Projeto POO.cpp" />
     <ClCompile Include="Uteis.cpp" />
+    <ClCompile Include="XMLWriter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

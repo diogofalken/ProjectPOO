@@ -5,6 +5,7 @@
 #include "FOficial.h"
 #include "FTipo1.h"
 #include "FTipo2.h"
+#include "XMLWriter.h"
 
 #include <vector>
 #define DELIMITADOR_FICHEIRO "//-------------------"
@@ -145,22 +146,24 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		cout << "Ficheiro nao esta com o formato certo" << endl;
 		exit(1);
 	}
-
-	/* TESTES */
-	list<int> *lista_fronteiras_nos = NoMaisArcos();
-	list<int> *lista_vertices_isolados = VerticesIsolados();
-	list<int> *lista_vertices_tipo = DevolveVerticesTipo("1");
-	double custo = 0, custo_minimo = 0, custo_maximo = 0;
-	list<int> *lista_caminho = Caminho(4, 9, custo);
-	list<int> *caminho_curto = CaminhoMinimo(4, 13, custo_minimo);
-	list<int> *caminho_maximo = CaminhoMaximo(4, 13, custo_maximo);
-	
+	/*
 	if (RemoverVertice(1)) {
 		cout << "Foi removida a aresta 1 - 2" << endl;
 	}
 	else {
 		cout << "NAO FOI REMOVIDA" << endl;
-	}
+	}*/
+
+	EscreverXML("grafo.xml");
+	/* TESTES */
+	list<int> *lista_fronteiras_nos = NoMaisArcos();
+	list<int> *lista_vertices_isolados = VerticesIsolados();
+	list<int> *lista_vertices_tipo = DevolveVerticesTipo("1");
+	double custo = 0, custo_minimo = 0, custo_maximo = 0;
+	list<int> *lista_caminho = Caminho(4, 13, custo);
+	list<int> *caminho_curto = CaminhoMinimo(5, 15, custo_minimo);
+	list<int> *caminho_maximo = CaminhoMaximo(4, 13, custo_maximo);
+	
 	//ShowGrafo
 	mostrarGrafo();
 	cout << "Vertices: " << ContarNos() << " Arestas: " << ContarArcos() << endl;
@@ -187,17 +190,17 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 		cout << "Nao existe" << endl;
 	}
 
-	cout << "----------------------" << endl;
+	cout << "--------- Vertices Isolados --------- " << endl;
 	for (list<int>::iterator it = lista_vertices_isolados->begin(); it != lista_vertices_isolados->end(); it++) {
 		cout << (*it) << endl;
 	}
 
-	cout << "----------------------" << endl;
+	cout << "--------- Vertices Tipo --------- " << endl;
 	for (list<int>::iterator it = lista_vertices_tipo->begin(); it != lista_vertices_tipo->end(); it++) {
 		cout << (*it) << endl;
 	}
 
-	cout << "----------------------" << endl;
+	cout << "--------- Caminho --------- " << endl;
 	if (lista_caminho == NULL) {
 		cout << "Nao existe caminho" << endl;
 	}
@@ -444,7 +447,41 @@ bool Grafo::RemoverAresta(int v1, int v2) {
 //
 //-------------------------------------------------------------------
 void Grafo::EscreverXML(const string &s) {
+	XMLWriter xml;
+	
+	// Escrever o principio do xml
+	xml.escreverPrincipioPrograma(s);
 
+	// Escrever a info de todos os vertices
+	xml.escreverPrincipioTag("Vertices");
+	for (auto it = lista_fronteiras.begin(); it != lista_fronteiras.end(); ++it) {
+		string vertice = to_string((*it)->getVertice());
+		string x = to_string((*it)->getX_pos());
+		string y = to_string((*it)->getY_pos());
+		string tipo = to_string((*it)->getTipo());
+		xml.escreverPrincipioElemento("vertice");
+		xml.escreverElementoString(vertice, "Vertice");
+		xml.escreverElementoString(x, "X-pos");
+		xml.escreverElementoString(y, "Y-pos");
+		xml.escreverElementoString(tipo, "Tipo");
+		xml.escreverFimElemento();
+	}
+	xml.escreverFimTag();
+	// Escrever a info das arestas
+	xml.escreverPrincipioTag("Arestas");
+	for (auto it = myGrafo.begin(); it != myGrafo.end(); ++it) {
+		for (auto it1 = myGrafo[(*it).first].begin(); it1 != myGrafo[(*it).first].end(); ++it1) {
+			string source = to_string((*it).first);
+			string destination = to_string((*it1)->getVertice()->getVertice());
+			string custo = to_string((*it1)->getCusto());
+			xml.escreverPrincipioElemento("aresta");
+			xml.escreverElementoString(source, "Fonte");
+			xml.escreverElementoString(destination, "Destino");
+			xml.escreverElementoString(custo, "Custo");
+			xml.escreverFimElemento();
+		}
+	}
+	xml.escreverFimTag();
 }
 
 //-------------------------------------------------------------------
@@ -675,9 +712,9 @@ void Grafo::mostrarFronteiras() {
 }
 
 void Grafo::mostrarGrafo() {
-	for (int i = 1; i <= n_vertices; i++) {
-		cout << "Caminhos para o vertice " << i << endl;
-		for (list<Arestas*>::iterator it = myGrafo[i].begin(); it != myGrafo[i].end(); it++) {
+	for (auto it1 = myGrafo.begin(); it1 != myGrafo.end(); ++it1) {
+		cout << "Caminhos para o vertice " << (*it1).first << endl;
+		for (list<Arestas*>::iterator it = myGrafo[(*it1).first].begin(); it != myGrafo[(*it1).first].end(); it++) {
 			(*it)->Mostrar();
 		}
 		cout << "-----------------------------" << endl;
