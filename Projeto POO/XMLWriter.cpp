@@ -26,7 +26,7 @@ void XMLWriter::escreverElementoString(string element, string value) {
 		for (int i = 0; i < indent + 1; i++) {
 			out_file << "\t";
 		}
-		out_file << "<" << value << ">" << element << "<\\" << value << ">" << endl;
+		out_file << "<" << value << "> " << element << " <\\" << value << ">" << endl;
 	}
 	else {
 		cout << "Ficheiro fechado. Incapacitado de escrever para o ficheiro." << endl;

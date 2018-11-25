@@ -5,11 +5,13 @@
 
 class Grafo {
 private:
-	unsigned int n_vertices;
-	unsigned int n_arestas;
+	int n_vertices;
+	int n_arestas;
 	// Usamos um map de modo a guardar o vertice e os caminhos possiveis atraves de uma lista (contem o vertice e o custo desse caminho)
 	map<int, list<Arestas*>> myGrafo;
 	list<Fronteira*> lista_fronteiras;
+	map<int, list<Arestas*>> myGrafoXML;
+	list<Fronteira*> lista_fronteirasXML;
 
 	// Da return de uma variavel do tipo Fronteira_vizinha criada tendo em conta o tipo de fronteira
 	Arestas fronteira_arestas(int vertice, int x_pos, int y_pos, int tipo, int _custo = 0);
@@ -25,7 +27,7 @@ private:
 
 	// Mostra o grafo
 	void mostrarGrafo();
-	
+
 	// Funcao recursiva para encontrar o caminho
 	list<int> *Caminho(int source, int destination, list<int> visited, list<int> *caminho, double &custo_total);
 
@@ -43,6 +45,25 @@ private:
 			}
 		}
 		return false;
+	}
+
+	Fronteira* encontrarFronteiraXML(int vertice) {
+		for (list<Fronteira*>::iterator it = lista_fronteirasXML.begin(); it != lista_fronteirasXML.end(); it++) {
+			if ((*it)->getVertice() == vertice) {
+				return *it;
+			}
+		}
+		return NULL;
+	}
+
+	void mostrarGrafoXML() {
+		for (auto it1 = myGrafoXML.begin(); it1 != myGrafoXML.end(); ++it1) {
+			cout << "Caminhos para o vertice " << (*it1).first << endl;
+			for (list<Arestas*>::iterator it = myGrafoXML[(*it1).first].begin(); it != myGrafoXML[(*it1).first].end(); it++) {
+				(*it)->Mostrar();
+			}
+			cout << "-----------------------------" << endl;
+		}
 	}
 
 public:
@@ -98,7 +119,7 @@ public:
 	// Determinar o caminho minimo entre 2 nos, devolvendo o custo total;
 	list<int> *CaminhoMinimo(int v1, int v2, double &custo_total);
 	//int CaminhoMinimo(int v1, int v2, double &custo_total);
-	
+
 	// Determinar o caminho maximo entre 2 nos (passando somente uma vez em cada vertice), devolvendo o custo total;
 	list<int> *CaminhoMaximo(int v1, int v2, double &custo_total);
 	//void CaminhoMaximo(int v1, int v2, double &custo_total);

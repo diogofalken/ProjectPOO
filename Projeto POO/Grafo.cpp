@@ -8,6 +8,7 @@
 #include "XMLWriter.h"
 
 #include <vector>
+#include <algorithm>
 #define DELIMITADOR_FICHEIRO "//-------------------"
 
 //-------------------------------------------------------------------
@@ -36,7 +37,7 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	ifstream in_file(fich_grafo);
 
 	// Variaveis auxiliares
-	string buffer, aux_buffer;
+	string buffer;
 	int x, y, vertice, tipo, parametro = 0, index = 0;
 
 	// Verificar se o ficheiro foi aberto corretamente  
@@ -55,12 +56,11 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 
 	while (!in_file.eof()) {
 		getline(in_file, buffer);
-		aux_buffer = buffer;
 		stringstream ss(buffer);
 		parametro = 0;
 
 		// Se a string for igual ao Delimitador de Arestas/Vertices parar
-		if (aux_buffer == DELIMITADOR_FICHEIRO) {
+		if (buffer == DELIMITADOR_FICHEIRO) {
 			break;
 		}
 
@@ -86,7 +86,7 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 
 	// Verificar se os vertices estao corretos no ficheiro
 	// TODO: Depois MUDAR
-	n_vertices = lista_fronteiras.size();
+	n_vertices = (int)lista_fronteiras.size();
 	if (lista_fronteiras.size() != n_vertices) {
 		system("cls");
 		cout << "Ficheiro nao esta com o formato certo" << endl;
@@ -103,7 +103,6 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 
 	while (!in_file.eof()) {
 		getline(in_file, buffer);
-		aux_buffer = buffer;
 		stringstream ss(buffer);
 		parametro = 0;
 
@@ -161,9 +160,9 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	list<int> *lista_vertices_tipo = DevolveVerticesTipo("1");
 	double custo = 0, custo_minimo = 0, custo_maximo = 0;
 	list<int> *lista_caminho = Caminho(4, 13, custo);
-	list<int> *caminho_curto = CaminhoMinimo(5, 15, custo_minimo);
+	list<int> *caminho_curto = CaminhoMinimo(4, 13, custo_minimo);
 	list<int> *caminho_maximo = CaminhoMaximo(4, 13, custo_maximo);
-	
+
 	//ShowGrafo
 	mostrarGrafo();
 	cout << "Vertices: " << ContarNos() << " Arestas: " << ContarArcos() << endl;
@@ -227,6 +226,9 @@ bool Grafo::Load(const string &fich_grafo, const string &fich_pessoas) {
 	}
 	cout << "Custo: " << custo_maximo << endl;
 */
+
+	cout << "------------ LER XML ------------ " << endl;
+	LerXML("grafo.xml");
 	delete(lista_fronteiras_nos);
 	delete(lista_vertices_isolados);
 	delete(lista_vertices_tipo);
@@ -356,7 +358,6 @@ list<int> *Grafo::Caminho(int v1, int v2, double &custo_total) {
 // Retorno:
 //    Lista de vertices isolados
 //-------------------------------------------------------------------
-// TODO: CORRIGIR, isto esta dar mal porque com o auto ele nao conta os vertices que nao tem arestas
 list<int> *Grafo::VerticesIsolados() {
 	list<int> *l_fronteiras = new list<int>;
 
@@ -448,7 +449,7 @@ bool Grafo::RemoverAresta(int v1, int v2) {
 //-------------------------------------------------------------------
 void Grafo::EscreverXML(const string &s) {
 	XMLWriter xml;
-	
+
 	// Escrever o principio do xml
 	xml.escreverPrincipioPrograma(s);
 
@@ -493,7 +494,118 @@ void Grafo::EscreverXML(const string &s) {
 //    true/false, dependendo se o ficheiro foi lido ou nao
 //-------------------------------------------------------------------
 bool Grafo::LerXML(const string &s) {
-	return false;
+	ifstream in_file(s);
+	if (!Uteis::FicheiroAberto(&in_file)) {
+		cout << "Nao foi possivel abrir o ficheiro " << s << endl;
+		return false;
+	}
+
+	// Ignore <!-- XML Document -->
+	in_file.ignore(200, '\n');
+
+	// Ignore XML line
+	in_file.ignore(200, '\n');
+
+	in_file.ignore(200, '\n');
+
+	// Vertices
+	string buffer, aux_buffer, lixo;
+	char chars_to_remove[] = "\t\t";
+	int vertice, x, y, tipo = 0, parametros, erro = 0;
+
+	// Arestas
+	int vertice_origem, vertice_destino, custo, aux_arestas = 0;
+	for (int i = 1; i <= n_vertices; ++i) {
+		myGrafo[i].push_back(NULL);
+		myGrafo[i].remove(NULL);
+	}
+
+	// Ignorar a tag <vertice>
+	in_file.ignore(200, '\n');
+	while (!in_file.eof()) {
+		parametros = 0;
+		if (!erro) {
+			while (getline(in_file, buffer) && parametros != 4) {
+				for (unsigned int i = 0; i < strlen(chars_to_remove); ++i) {
+					buffer.erase(remove(buffer.begin(), buffer.end(), chars_to_remove[i]), buffer.end());
+				}
+				stringstream ss(buffer);
+				ss >> lixo;
+				if (lixo == "<Vertice>") {
+					ss >> vertice;
+					parametros++;
+					continue;
+				}
+				if (lixo == "<X-pos>") {
+					ss >> x;
+					parametros++;
+					continue;
+				}
+				if (lixo == "<Y-pos>") {
+					ss >> y;
+					parametros++;
+					continue;
+				}
+				if (lixo == "<Tipo>") {
+					ss >> tipo;
+					parametros++;
+					continue;
+				}
+			}
+			Fronteira *current = fronteira_vertice_principal(vertice, x, y, tipo);
+			// Mudar para encontrarFronteira
+			// Verificar se a fronteira ja existe na lista se existir nao adiciona
+			if (!encontrarFronteiraXML(current->getVertice())) {
+				lista_fronteirasXML.push_back(current);
+			}
+			getline(in_file, buffer);
+			if (buffer == "</Vertices>") {
+				erro = 1;
+				continue;
+			}
+		}
+		else {
+			while (getline(in_file, buffer) && parametros != 3) {
+				for (unsigned int i = 0; i < strlen(chars_to_remove); ++i) {
+					buffer.erase(remove(buffer.begin(), buffer.end(), chars_to_remove[i]), buffer.end());
+				}
+				stringstream ss(buffer);
+				ss >> lixo;
+				if (lixo == "<Fonte>") {
+					ss >> vertice_origem;
+					parametros++;
+					continue;
+				}
+				if (lixo == "<Destino>") {
+					ss >> vertice_destino;
+					parametros++;
+					continue;
+				}
+				if (lixo == "<Custo>") {
+					ss >> custo;
+					parametros++;
+					continue;
+				}
+			}
+			Arestas *aux = new Arestas();
+			aux->setCusto(custo);
+			aux->setVertice(encontrarFronteiraXML(vertice_destino));
+			// Se o vertice nao existir
+			if (aux->getVertice()->getVertice() == NULL) {
+				cout << "ERROR" << endl;
+				exit(1);
+			}
+			myGrafoXML[vertice_origem].push_back(aux);
+
+			getline(in_file, buffer);
+			if (buffer == "</Arestas>") {
+				break;
+			}
+		}
+	}
+	mostrarGrafoXML();
+	system("pause");
+	return true;
 }
 
 //-------------------------------------------------------------------
@@ -526,47 +638,45 @@ list<int> *Grafo::DevolveVerticesTipo(const string &tipo) {
 //    lista dos vertices com o caminho mais curto entre v1 e v2
 //-------------------------------------------------------------------
 list<int> *Grafo::CaminhoMinimo(int v1, int v2, double &custo_total) {
-	vector<int> distance(n_vertices + 1);     // The output array.  distance[i] will hold the shortest 
-					 // distance from src to i 
-	vector<int> parent(n_vertices + 1);
-	vector<bool> visited(n_vertices + 1); // visited[i] will true if vertex i is included in shortest 
-					// shortest distance from source to i is finalized (aka already visited) 
+	vector<int> distance(n_vertices + 1);  // O vetor que vai conter o caminho mais curto de v1 a todos os outros vertices
+	vector<int> caminhos(n_vertices + 1);  // O vetor vai conter todos os caminhos (path) da v1 a todos os vertices
+	vector<bool> visited(n_vertices + 1); // visited[i] vai ser true se o vertice ja tiver sido visitado
 
-	// Initialize all distances as INT_MAX and visited[] as false 
+	// Inicializar todas as distancias a INT_MAX, visited[] a falso e a matriz de caminhos a -1
 	for (int i = 1; i <= n_vertices; i++) {
 		distance[i] = INT_MAX;
 		visited[i] = false;
-		parent[0] = -1;
+		caminhos[0] = -1;
 	}
 
-	// Distance of source vertex from itself is always 0 
+	// Distancia do vertice src e sempre 0
 	distance[v1] = 0;
 
-	// Find shortest path for all vertices 
+	// Encontra o caminho mais curto
 	for (auto it1 = myGrafo.begin(); it1 != myGrafo.end(); it1++) {
-		// Pick the minimum distance vertex from the set of vertices not 
-		// yet processed. u is always equal to src in the first iteration. 
+		// Atraves da funcao minDistance() que retorna o vertice com menor distancia
+		// dos vertices que ainda nao foram visitados u e sempre igual a v1 na primeira iteracao
 		int u = minDistance(distance, visited);
 
-		// Mark the picked vertex as processed 
+		// Atualiza o valor de visited[u] para visitado
 		visited[u] = true;
 
-		// Update distance value of the adjacent vertices of the picked vertex. 
+		// Atualiza o valor da distância dos vertices adjacentes ao u
 		for (auto it = myGrafo[u].begin(); it != myGrafo[u].end(); ++it) {
-			// Update distance[v] only if is not in visited, there is an edge from  
-			// u to v, and total weight of path from src to  v through u is  
-			// smaller than current value of distance[v] 
+			// Atualiza a distance[v] apenas se ainda nao tiver sido visitado, 
+			// e o custo total do caminho da src para o vertice atual seja 
+			// inferior ao valor atual de distance[current] 
 			if (!visited[(*it)->getVertice()->getVertice()] && (*it)->getCusto() && distance[u] != INT_MAX
 				&& distance[u] + (*it)->getCusto() < distance[(*it)->getVertice()->getVertice()]) {
-				// Change the current destination of vertice
-				parent[(*it)->getVertice()->getVertice()] = u;
+				// Muda a distance do vertice atual
+				caminhos[(*it)->getVertice()->getVertice()] = u;
 				distance[(*it)->getVertice()->getVertice()] = distance[u] + (*it)->getCusto();
 			}
 		}
 	}
-	// Allocate list of shortest path
+	// Alocar lista para o caminho mais curto
 	list<int> *caminho = new list<int>;
-	CopiarCaminhoParent(parent, v2, caminho);
+	CopiarCaminhoParent(caminhos, v2, caminho);
 	custo_total = distance[v2];
 	list<int>::iterator it = --caminho->end();
 
@@ -675,6 +785,7 @@ Arestas Grafo::fronteira_arestas(int vertice, int x_pos, int y_pos, int tipo, in
 	}
 	return current;
 }
+
 Fronteira* Grafo::encontrarFronteira(int vertice) {
 	for (list<Fronteira*>::iterator it = lista_fronteiras.begin(); it != lista_fronteiras.end(); it++) {
 		if ((*it)->getVertice() == vertice) {
